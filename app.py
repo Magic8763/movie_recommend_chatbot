@@ -102,8 +102,8 @@ def Restore_Status(id):
 		category2, category3, buffer2, scoring, aibuf = [], [], [], [], []
 	print("  Restore <<< "+id+" <<< Table["+str(len(statusTable))+"]")
 
-# 監聽所有來自'.../'的 Post Request
-@app.route("/", methods = ['POST'])
+# 監聽所有來自'.../callback'的 Post Request
+@app.route("/callback", methods = ['POST'])
 def linebot(): # 每個訊息的首站
 	#print("######### callback ########")
 	print("\n######### linebot running ########")

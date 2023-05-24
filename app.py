@@ -14,6 +14,7 @@ import csv
 import pandas as pd
 
 import openai
+# OPENAI_API_KEY
 openai.api_key = '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'
 
 from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake
@@ -102,8 +103,8 @@ def Restore_Status(id):
 		category2, category3, buffer2, scoring, aibuf = [], [], [], [], []
 	print("  Restore <<< "+id+" <<< Table["+str(len(statusTable))+"]")
 
-# 監聽所有來自'.../callback'的 Post Request
-@app.route("/callback", methods = ['POST'])
+# 監聽所有來自'.../'的 Post Request
+@app.route("/", methods = ['POST'])
 def linebot(): # 每個訊息的首站
 	#print("######### callback ########")
 	print("\n######### linebot running ########")
@@ -698,12 +699,10 @@ def handle_message(event):
 	#message = TextSendMessage(text=str(len(movieAll)))
 	line_bot_api.reply_message(event.reply_token, message)
 
-if __name__ == "__main__":
-	print("######### __name__ ########")
-	global status
-	status = 0
-	port = int(os.environ.get('PORT', 5000))
-	Read_All_Data2()
-	Classification()
-	KNN_Result()
-	app.run(host='0.0.0.0', port=port)
+print("######### main ########")
+status = 0
+port = int(os.environ.get('PORT', 5000))
+Read_All_Data2()
+Classification()
+KNN_Result()
+app.run(host='0.0.0.0', port=port)

@@ -15,7 +15,7 @@ import pandas as pd
 
 import openai
 # OPENAI_API_KEY
-openai.api_key = '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'
+openai.api_key = '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'
 
 from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake
 

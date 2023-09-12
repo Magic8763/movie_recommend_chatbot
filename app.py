@@ -32,13 +32,15 @@ typedcit = {'Documentary': (0, '紀錄'), 'History': (1, '歷史'), 'Comedy': (2
 			'Biography': (12, '傳記'), 'Music': (13, '音樂'), 'Drama': (14, '劇情'),
 			'Family': (15, '家庭'), 'Adventure': (16, '冒險'), 'Mystery': (17, '懸疑'),
 			'Action': (18, '動作'), 'Horror': (19, '恐怖'), 'Romance': (20, '浪漫'),
-			'Fantasy': (21, '奇幻')}
-movieTable, typeTable, statusTable, resultTable, nameTable = [], [], [], [], {}
+			'Fantasy': (21, '奇幻'), 'News': (22, '新聞')}
+movieTable, typeTable, statusTable, resultTable = [], [], [], []
 honmpage_picture = 'https://attach.setn.com/newsimages/2017/02/10/805406-XXL.jpg'
 error_picture = 'https://cdn0.techbang.com/system/excerpt_images/55555/original/d5045073e258563e2b62eed24605cd60.png?1512550227'
 playing_k = 20 # 近期上映的前k部電影
 carousel_size = 20 # 旋轉模板長度上限
-rating_matrix = None
+nameTable = {}
+ratings = None
+user_rating_matrix = None
 
 class Movie2():
     def __init__(self, id = None, name = None, t = None):
@@ -139,9 +141,9 @@ def Read_All_Data2():
 	"""
 	df = pd.read_csv('movieData.csv', sep = ',')
 	for i in range(0, len(df)):
-		movieID, movieName = str(df['movieId'].iloc[i]), str(df['nameEnglish'].iloc[i])
-		nameTable[int(movieID)] = (i, movieName)
-		movie = Movie2(movieID, movieName, str(df['time'].iloc[i]))
+		movieId, movieName = str(df['movieId'].iloc[i]), str(df['nameEnglish'].iloc[i])
+		nameTable[movieId] = (i, movieName)
+		movie = Movie2(movieId, movieName, str(df['time'].iloc[i]))
 		movie.info_addr = 'https://www.imdb.com/title/'+str(df['info_addr'].iloc[i])
 		if df['grade'].iloc[i] != 'N/A':
 			movie.grade = str(df['grade'].iloc[i])
@@ -316,9 +318,9 @@ def Read_Personal_Record(event, get_msg = True):
 		record_str = ''
 		for infile in read:
 			info = infile.split('\t')
-			movieName = nameTable[int(info[3])][1]
-			record_str = str(info[1])+'/'+str(info[2])+' ['+movieName+']: '+str(info[4])+record_str 
-		msg = TextSendMessage(text = record_str[:-1]) if get_msg else str(info[3])
+			movieName = nameTable[info[3]][1]
+			record_str = info[1]+'/'+info[2]+' ['+movieName+']: '+info[4]+record_str 
+		msg = TextSendMessage(text = record_str[:-1]) if get_msg else info[3]
 	except IOError:
 		msg = TextSendMessage(text = '查無本id的紀錄') if get_msg else None
 	return msg
@@ -396,60 +398,28 @@ def Get_Playing2(event, type):
 		msg = TextSendMessage(text = '沒有更多電影')
 	return msg
 
-"""
 # 提前準備影評矩陣(使用者, 電影)
-def build_rating_matrix():
-	global rating_matrix
-	df = pd.read_csv('ourRatings.csv', sep = ',') # MovieLens提供的用戶評分紀錄
-	movie_titles = pd.read_csv('movieData.csv') # 採用的MovieLens電影資料
-	myMovie = movie_titles.reset_index()[['index','nameEnglish']]
-	movie_titles = movie_titles[['movieId','nameEnglish']]
-	df = pd.merge(df, movie_titles, on = 'movieId') 
-	ratings = pd.DataFrame(df.groupby('nameEnglish')['rating'].mean())
-	ratings['number_of_ratings'] = df.groupby('nameEnglish')['rating'].count() 
-	rating_matrix = df.pivot_table(index = 'userId', columns = 'nameEnglish', values = 'rating') 
-
-# 共同篩選
-def Filtering(lastmovie, needed):
-	print("######### Filtering ########")
-	lastmovie_ratings = rating_matrix[lastmovie]
-	similar_to_lastmovie = rating_matrix.corrwith(lastmovie_ratings)
-	corr_lastmovie_ratings = pd.DataFrame(similar_to_lastmovie, columns = ['Correlation']) 
-	#print(corr_lastmovie_ratings)
-	corr_lastmovie_ratings.dropna(inplace = True) 
-	#print(corr_lastmovie_ratings.sort_values(by = 'Correlation',ascending=False).head(10))
-	t = corr_lastmovie_ratings.join(ratings['number_of_ratings'])
-	t = t[t['number_of_ratings'] > needed].sort_values(by = 'Correlation', ascending = False).reset_index()["nameEnglish"]
-#	myMovie = myMovie.reset_index()[['index','nameEnglish']]
-	res = []
-	for title in t : 
-		i = myMovie[myMovie['nameEnglish'] == title]['index'].tolist()[0]
-		res.append(i)
-	return res
-"""
-
-# 提前準備影評矩陣(使用者, 電影)
-def build_rating_matrix():
-	global rating_matrix
-	movie_ratings = pd.read_csv('ourRatings.csv', sep = ',') # MovieLens提供的用戶評分紀錄
-	movie_titles = pd.read_csv('movieData.csv') # 採用的MovieLens電影資料
+def Build_URM():
+	global ratings, user_rating_matrix
+	print("######### Build URM ########")
+	movie_ratings = pd.read_csv('ourRatings.csv', sep = ',')    
+	movie_titles = pd.read_csv('movieData.csv')
 	df = pd.merge(movie_ratings, movie_titles, on = 'movieId')
 	gdf = df.groupby('movieId')
 	ratings = pd.DataFrame(gdf['rating'].mean())
 	ratings['number_of_ratings'] = gdf['rating'].count() 
-	rating_matrix = df.pivot_table(index = 'userId', columns = 'movieId', values = 'rating') 
-
+	user_rating_matrix = df.pivot_table(index = 'userId', columns = 'movieId', values = 'rating') 
+	
 # 共同篩選
-def Filtering(lastmovieID, needed):
+def Filtering(lastmovieId, needed):
 	print("######### Filtering ########")
-	lastmovie_ratings = rating_matrix[lastmovieID]
-	similar_to_lastmovie = rating_matrix.corrwith(lastmovie_ratings)
-	corr_lastmovie_ratings = pd.DataFrame(similar_to_lastmovie, columns = ['Correlation']) 
-	corr_lastmovie_ratings.dropna(inplace = True) 
-
-	t = corr_lastmovie_ratings.join(ratings['number_of_ratings'])
-	t = t[t['number_of_ratings'] >= needed].sort_values(by = 'Correlation', ascending = False).reset_index()["movieId"]
-	res = [nameTable[name][0] for name in t] # 將電影id轉為索引
+	lastmovie_ratings = user_rating_matrix[int(lastmovieId)]
+	similar_to_lastmovie = user_rating_matrix.corrwith(lastmovie_ratings)
+	corr_lastmovie_ratings = pd.DataFrame(similar_to_lastmovie, columns = ['Correlation'])
+	corr_lastmovie_ratings.dropna(inplace = True)
+	df = corr_lastmovie_ratings.join(ratings['number_of_ratings'])
+	df = df[df['number_of_ratings'] >= needed].sort_values(by = 'Correlation', ascending = False).reset_index()["movieId"]
+	res = [nameTable[str(i)][0] for i in df] # 將電影id轉為索引
 	return res
 
 # 相關性同類推薦
@@ -509,12 +479,12 @@ def Recommend2(event, type):
 	global aibuf
 	if type == 1:
 		id = event.source.user_id
-		movieID = Read_Personal_Record(event, False) #[2069] = 75731 Toy Story 3
+		movieId = Read_Personal_Record(event, False) #[2069] = 75731 Toy Story 3
 		buf = []
-		if movieID != None:
+		if movieId != None:
 			for i in range(0, len(movieTable)):
-				if movieTable[i].nameEnglish == movieID:
-					cpbuf = Filtering(movieID, carousel_size) if i < (len(movieTable)-playing_k) else resultTable[i]
+				if movieTable[i].nameEnglish == movieId:
+					cpbuf = Filtering(movieId, carousel_size) if i < (len(movieTable)-playing_k) else resultTable[i]
 					for cp in cpbuf:
 						if movieTable[cp].type:
 							buf.append(cp)
@@ -545,15 +515,17 @@ def Recommend2(event, type):
 	return msg
 
 # 紀錄評分
-def Score_message(text, scoring): # scoring=[用戶id,電影id,電影名稱]
+def Score_message(text, scoring):
 	print("######### Score_message ########")
 	global status
-	uid = str(scoring[0]) # user id
+	uid = str(scoring[0]) # 用戶id
+	movieId = str(scoring[1]) # 電影id
+	movieName = str(scoring[2]) # 電影名稱
 	try:
 		num = str(min(5.0, max(0.0, float(text))))
-		Save_Personal_Record(uid, str(scoring[1]), num)
-		# Save_Personal_Record(uid, str(scoring[2]), num)
-		print('****' + uid + '****' + str(scoring[1]) + '****' + str(scoring[2]) + '****' + num + '****')
+		Save_Personal_Record(uid, movieId, num)
+		#Save_Personal_Record(uid, movieName, num)
+		print('****' + uid + '****' + movieId + '****' + movieName + '****' + num + '****')
 		msg = TextSendMessage(text = '已評分')		
 		#status = 0
 	except ValueError:
@@ -739,7 +711,7 @@ if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下�
 	port = int(os.environ.get('PORT', 5000))
 	Read_All_Data2()
 	Classification()
-	build_rating_matrix()
+	Build_URM()
 	KNN_Result()
 	app.run(host='0.0.0.0', port = port)
 """
@@ -751,4 +723,3 @@ Classification()
 KNN_Result()
 app.run(host='0.0.0.0', port = port)
 """
-

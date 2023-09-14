@@ -1,7 +1,6 @@
-from flask import Flask, request, abort
-from linebot import LineBotApi, WebhookHandler
+from flask import Flask, request, abort # pip install flask
+from linebot import LineBotApi, WebhookHandler # pip install line-bot-sdk
 from linebot.exceptions import InvalidSignatureError
-#from linebot.models import *
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ImageSendMessage, 
     PostbackEvent, PostbackTemplateAction, URITemplateAction,
@@ -13,7 +12,7 @@ import datetime
 import csv
 import pandas as pd
 
-import openai
+import openai # pip install openai
 # OPENAI_API_KEY
 openai.api_key = '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'
 
@@ -46,10 +45,10 @@ class Movie2():
     def __init__(self, id = None, name = None, t = None):
         self.id = id
         self.nameEnglish = name
-        self.time = t
-        self.info_addr = None
+        self.year = t
+        self.genres = []
         self.grade = None
-        self.type = []
+        self.imdbId = None
         self.picture= None
 
 class Personal_Status():
@@ -127,12 +126,12 @@ def Read_All_Data2():
 	with open('movieData.csv', newline = '', encoding = 'utf8') as csvfile:
 		rows = csv.DictReader(csvfile)
 		for row in rows:
-			movie = Movie2(str(row['movieId']), str(row['nameEnglish']),str(row['time']))
-			movie.info_addr = 'https://www.imdb.com/title/'+str(row['info_addr'])
+			movie = Movie2(str(row['movieId']), str(row['nameEnglish']), str(row['year']))
+			movie.imdbId = 'https://www.imdb.com/title/tt'+str(row['imdbId'])
 			if row['grade'] != 'N/A':
 				movie.grade = str(row['grade'])
-			if row['type'] != 'N/A':
-				movie.type = str(row['type']).split(', ')
+			if row['genres'] != 'N/A':
+				movie.genres = str(row['genres']).split(', ')
 			if row['picture'] != 'N/A':
 				movie.picture = str(row['picture'])
 			else:
@@ -143,12 +142,12 @@ def Read_All_Data2():
 	for i in range(0, len(df)):
 		movieId, movieName = str(df['movieId'].iloc[i]), str(df['nameEnglish'].iloc[i])
 		nameTable[movieId] = (i, movieName)
-		movie = Movie2(movieId, movieName, str(df['time'].iloc[i]))
-		movie.info_addr = 'https://www.imdb.com/title/'+str(df['info_addr'].iloc[i])
+		movie = Movie2(movieId, movieName, str(df['year'].iloc[i]))
+		movie.imdbId = 'https://www.imdb.com/title/tt'+str(df['imdbId'].iloc[i])
 		if df['grade'].iloc[i] != 'N/A':
 			movie.grade = str(df['grade'].iloc[i])
-		if df['type'].iloc[i] != 'N/A':
-			movie.type = str(df['type'].iloc[i]).split(', ')
+		if df['genres'].iloc[i] != 'N/A':
+			movie.genres = str(df['genres'].iloc[i]).split('|')
 		if df['picture'].iloc[i] != 'N/A':
 			movie.picture = str(df['picture'].iloc[i])
 		else:
@@ -161,7 +160,7 @@ def Classification():
 	for _ in range(0, len(typedcit)):
 		typeTable.append([])
 	for i in range(0, len(movieTable)):
-		for tp in movieTable[i].type:
+		for tp in movieTable[i].genres:
 			if tp in typedcit:
 				typeTable[typedcit[tp][0]].append(i)
 
@@ -171,6 +170,7 @@ def KNN_Result():
 	for _ in range(0, len(movieTable)):
 		resultTable.append([])
 	with open('movie3477.txt', 'r', encoding = 'utf8') as f:
+		# movie3477.txt: KNN計算結果, 3477部電影各自與其最相近的其他50部電影
 		read = f.readlines()
 	for inMovie in read:
 		info = inMovie.split('\t')
@@ -257,7 +257,7 @@ def Menu(keyword, home):
 	elif home == 3:
 		msg = CarouselColumn(
 			thumbnail_image_url = honmpage_picture,
-			title='\"'+keyword+'\"的搜尋結果',
+			title = '\"'+keyword+'\"的搜尋結果',
 			text = '請選擇欲執行的功能',
 			actions = [
 				PostbackTemplateAction(
@@ -334,14 +334,14 @@ def Carousel_template2(event, sub_buffer, text, home):
 		if len(sub_buffer[i].nameEnglish) > 40:
 			continue
 		movie_info = 'action=5-1'+personal_id+'\n'+sub_buffer[i].id+'\n'+sub_buffer[i].nameEnglish
-		context = '('+str(sub_buffer[i].time)+')'
-		if sub_buffer[i].type:
-			sub	= Translater(sub_buffer[i].type, 1)
+		context = '('+str(sub_buffer[i].year)+')'
+		if sub_buffer[i].genres:
+			sub	= Translater(sub_buffer[i].genres, 1)
 			context += '\n'+sub[0]
-			action = 'action=3-1'+sub_buffer[i].type[0]
-			for j in range(1, len(sub_buffer[i].type)):
+			action = 'action=3-1'+sub_buffer[i].genres[0]
+			for j in range(1, len(sub_buffer[i].genres)):
 				context += ','+sub[j]
-				action += '\n'+sub_buffer[i].type[j]
+				action += '\n'+sub_buffer[i].genres[j]
 			action += '\n'+str(i)
 		else:
 			action = ' '
@@ -356,8 +356,8 @@ def Carousel_template2(event, sub_buffer, text, home):
 			text = context,
 			actions = [
 				URITemplateAction(
-					label = 'IMDb網頁',
-					uri = sub_buffer[i].info_addr
+					label = 'IMDb主頁',
+					uri = sub_buffer[i].imdbId
 				),
 				PostbackTemplateAction(
 					label = '給予評分',
@@ -402,24 +402,25 @@ def Get_Playing2(event, type):
 def Build_URM():
 	global ratings, user_rating_matrix
 	print("######### Build URM ########")
-	movie_ratings = pd.read_csv('ourRatings.csv', sep = ',')    
-	movie_titles = pd.read_csv('movieData.csv')
-	df = pd.merge(movie_ratings, movie_titles, on = 'movieId')
-	gdf = df.groupby('movieId')
-	ratings = pd.DataFrame(gdf['rating'].mean())
-	ratings['number_of_ratings'] = gdf['rating'].count() 
-	user_rating_matrix = df.pivot_table(index = 'userId', columns = 'movieId', values = 'rating') 
+	movie_ratings = pd.read_csv('ourRatings.csv', sep = ',') # MovieLens提供的用戶評分紀錄
+	movie_titles = pd.read_csv('movieData.csv') # 採用的MovieLens電影資料
+	df = pd.merge(movie_ratings, movie_titles, on = 'movieId') # 基於電影id水平合併兩資料表的欄位
+	gdf = df.groupby('movieId') # 依電影id分群
+	ratings = pd.DataFrame(gdf['rating'].mean())# 截取各群的'rating'平均值作為新資料表ratings
+	ratings['number_of_ratings'] = gdf['rating'].count() # 截取各群的'rating'個數作為ratings的'number_of_ratings'欄位
+	user_rating_matrix = df.pivot_table(index = 'userId', columns = 'movieId', values = 'rating') # 每位用戶對每部電影的評分, 缺值為nan
 	
 # 共同篩選
-def Filtering(lastmovieId, needed):
+def Filtering(target, needed):
 	print("######### Filtering ########")
-	lastmovie_ratings = user_rating_matrix[int(lastmovieId)]
-	similar_to_lastmovie = user_rating_matrix.corrwith(lastmovie_ratings)
-	corr_lastmovie_ratings = pd.DataFrame(similar_to_lastmovie, columns = ['Correlation'])
-	corr_lastmovie_ratings.dropna(inplace = True)
-	df = corr_lastmovie_ratings.join(ratings['number_of_ratings'])
-	df = df[df['number_of_ratings'] >= needed].sort_values(by = 'Correlation', ascending = False).reset_index()["movieId"]
-	res = [nameTable[str(i)][0] for i in df] # 將電影id轉為索引
+	target_ratings = user_rating_matrix[int(target)] # 每位用戶對目標電影的評分
+	similar_to_target = user_rating_matrix.corrwith(target_ratings) # 每部電影與目標電影的相關性
+	corr_target_ratings = pd.DataFrame(similar_to_target, columns = ['Correlation']) # 將系列轉成資料表
+	corr_target_ratings.dropna(inplace = True) # 去除相關性為nan者
+	df = corr_target_ratings.join(ratings['number_of_ratings']) # 基於電影名稱水平合併欄位, 不包含缺值的值組(相關性為nan的電影)
+	df = df[df['number_of_ratings'] >= needed] # 去除評分個數少於needed者
+	df = df.sort_values(by = 'Correlation', ascending = False).reset_index()["movieId"] # 基於相關性遞減排序電影id
+	res = [nameTable[str(i)][0] for i in df] # 將電影id轉為電影索引
 	return res
 
 # 相關性同類推薦
@@ -434,8 +435,8 @@ def Same_Category3(event, text, type):
 		for l in range(0, len(text)):
 			buf = []
 			for cp in cpbuf:
-				if movieTable[cp].type:
-					for tp in movieTable[cp].type:
+				if movieTable[cp].genres:
+					for tp in movieTable[cp].genres:
 						if str(text[l]) == tp:
 							buf.append(cp)
 			if len(buf) < carousel_size:
@@ -486,7 +487,7 @@ def Recommend2(event, type):
 				if movieTable[i].nameEnglish == movieId:
 					cpbuf = Filtering(movieId, carousel_size) if i < (len(movieTable)-playing_k) else resultTable[i]
 					for cp in cpbuf:
-						if movieTable[cp].type:
+						if movieTable[cp].genres:
 							buf.append(cp)
 					break
 		aibuf = []
@@ -522,7 +523,7 @@ def Score_message(text, scoring):
 	movieId = str(scoring[1]) # 電影id
 	movieName = str(scoring[2]) # 電影名稱
 	try:
-		num = str(min(5.0, max(0.0, float(text))))
+		num = str(min(10, max(1, int(text))))
 		Save_Personal_Record(uid, movieId, num)
 		#Save_Personal_Record(uid, movieName, num)
 		print('****' + uid + '****' + movieId + '****' + movieName + '****' + num + '****')
@@ -615,7 +616,7 @@ def handle_postback(event):
 		status = 5
 		scoring = event.postback.data[10:].split('\n')
 		print(scoring)
-		message = TextSendMessage(text='請輸入分數(0.0~5.0)')
+		message = TextSendMessage(text='請輸入分數(1~10)')
 	elif event.postback.data == 'action=6-1':
 		message = Recommend2(event, 1)
 	elif event.postback.data == 'action=6-2':
@@ -662,12 +663,12 @@ def handle_message(event):
 			message = Score_message(event.message.text, scoring)
 		status = 0
 		Store_Status(id)
-	elif event.message.type == 'location':
+	elif event.message.genres == 'location':
 		print('  >>> 氣象預報機器人 <<<')
 		address = event.message.address
 		msg = address+'\n'+Get_Weather(address)+'\n'+Get_AQI(address)+'\n'+Get_Forecast(address)
 		message = TextSendMessage(text = msg)
-	else: # event.message.type == 'text'
+	else: # event.message.genres == 'text'
 		text = event.message.text
 		if len(text) > 9 and text[:9] == "@電影推薦機器人：":
 			print('  >>> 電影推薦機器人 <<<')

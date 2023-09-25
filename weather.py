@@ -156,3 +156,8 @@ def Get_Earthquake():
 	except:
 		pass
 	return ('找不到地震資訊。', None)
+
+# 雷達回波圖
+def Get_RadarEcho():
+	return ImageSendMessage(original_content_url = 'https://cwbopendata.s3.ap-northeast-1.amazonaws.com/MSC/O-A0058-003.png',
+							preview_image_url = 'https://cwbopendata.s3.ap-northeast-1.amazonaws.com/MSC/O-A0058-003.png')

@@ -42,6 +42,17 @@ default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imd
 playing_k = 20 # 近期上映的前k部電影
 carousel_size = 20 # 旋轉模板長度上限
 
+class Movie2():
+	def __init__(self, id = None, name = None, title = None, t = None):
+		self.id = id
+		self.nameEnglish = name
+		self.title = title
+		self.year = t
+		self.genres = []
+		self.grade = None
+		self.imdbId = None
+		self.picture= None
+
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):
 		os.mkdir(drt)
@@ -105,17 +116,6 @@ def KNN_Recommend():
 # 類型翻譯
 def Translater(buffer, ch):
 	return [genres_dict[tp][ch] for tp in buffer]
-
-class Movie2():
-	def __init__(self, id = None, name = None, title = None, t = None):
-		self.id = id
-		self.nameEnglish = name
-		self.title = title
-		self.year = t
-		self.genres = []
-		self.grade = None
-		self.imdbId = None
-		self.picture= None
 
 class Request_Handle():
 	def __init__(self, event, isPostback=False):
@@ -647,6 +647,7 @@ def handle_message(event):
 	#req = Request_Handle(event, False) # 以thread生成
 	thread = threading.Thread(target = Threading_Handle, args = (event, False)) # 以thread生成
 	thread.start()
+
 if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下列程式碼
 	print("\n######### main ########")
 	Read_All_Data2()

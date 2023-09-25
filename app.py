@@ -43,6 +43,16 @@ playing_k = 20 # 近期上映的前k部電影
 carousel_size = 20 # 旋轉模板長度上限
 
 class Movie2:
+	def __new__(self, id = None, name = None, title = None, t = None):
+		self.id = id
+		self.nameEnglish = name
+		self.title = title
+		self.year = t
+		self.genres = []
+		self.grade = None
+		self.imdbId = None
+		self.picture= None
+
 	def __init__(self, id = None, name = None, title = None, t = None):
 		self.id = id
 		self.nameEnglish = name
@@ -56,12 +66,12 @@ class Movie2:
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):
 		os.mkdir(drt)
-	with open(drt+'/'+fname, 'wb') as file:
+	with open(drt+'/'+fname+'.pkl', 'wb') as file:
 		pickle.dump(obj, file)
 
 def readVar(drt, fname, return_dict=False):
 	obj = {} if return_dict else []
-	if os.path.exists(drt+'/'+fname):
+	if os.path.exists(drt+'/'+fname+'.pkl'):
 		with open(drt+'/'+fname, 'rb') as file:
 			obj = pickle.load(file)
 	return obj
@@ -70,7 +80,6 @@ def readVar(drt, fname, return_dict=False):
 def Read_All_Data2():
 	print("######### Read_All_Data2 ########")
 	global movieTable, genresTable, nameTable
-	"""
 	movieTable = readVar('var', 'movieTable')
 	genresTable = readVar('var', 'genresTable')
 	nameTable = readVar('var', 'nameTable', True)
@@ -79,7 +88,6 @@ def Read_All_Data2():
 		print('  genresTable:', len(genresTable))
 		print('  nameTable:', len(nameTable))
 		return
-	"""
 	df = pd.read_csv('data/movies_extended_known_sorted.csv', sep = ',')
 	movieTable, nameTable = [], {}
 	genresTable = [[] for _ in range(0, len(genres_dict))]
@@ -113,6 +121,7 @@ def KNN_Recommend():
 		df = df.to_numpy().astype(int)
 		for i in range(0, len(df)):
 			recommends[df[i][0]] = df[i][1:]
+		writeVar(recommends, 'var', 'recommends')
 	else:
 		print('  recommends:', len(recommends))
 
@@ -208,7 +217,6 @@ class Request_Handle:
 			self.status = 2
 			message = TextSendMessage(text = '請輸入欲查詢的電影名稱(英文)')
 		elif event.postback.data == 'action=2-2': # 關鍵字搜尋附帶頁: 顯示更多
-			#self.status = 2
 			message = self.Search_Movie2(2)
 		elif event.postback.data == 'action=2-3': # 關鍵字搜尋失敗, self.status歸零
 			self.status = 0

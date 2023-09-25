@@ -4,4 +4,3 @@ pandas
 numpy
 requests
 openai
-gunicorn

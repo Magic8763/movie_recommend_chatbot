@@ -7,6 +7,7 @@ from linebot.models import (
 	CarouselColumn, CarouselTemplate, ButtonsTemplate, ConfirmTemplate
 )
 from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake, Get_RadarEcho
+from movie_class import Movie2
 import os
 import random
 import datetime
@@ -41,27 +42,6 @@ missing_picture = 'https://cdn0.techbang.com/system/excerpt_images/55555/origina
 default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imdb_logo.png'
 playing_k = 20 # 近期上映的前k部電影
 carousel_size = 20 # 旋轉模板長度上限
-
-class Movie2:
-	def __new__(self, id = None, name = None, title = None, t = None):
-		self.id = id
-		self.nameEnglish = name
-		self.title = title
-		self.year = t
-		self.genres = []
-		self.grade = None
-		self.imdbId = None
-		self.picture= None
-
-	def __init__(self, id = None, name = None, title = None, t = None):
-		self.id = id
-		self.nameEnglish = name
-		self.title = title
-		self.year = t
-		self.genres = []
-		self.grade = None
-		self.imdbId = None
-		self.picture= None
 
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):

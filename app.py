@@ -631,9 +631,11 @@ def Threading_Handle(event, isPostback=False):
 @handler.add(PostbackEvent)
 def handle_postback(event):
 	print("######### handle_postback ########")
-	#req = Request_Handle(event, True)
+	req = Request_Handle(event, True)
+	"""
 	thread = threading.Thread(target = Threading_Handle, args = (event, True)) # 以thread生成
 	thread.start()
+	"""
 
 # 處理"訊息發送"
 @handler.add(MessageEvent)
@@ -644,9 +646,11 @@ def handle_message(event):
 	# event.source.user_id = 使用者Line帳戶ID
 	# event.source.room_id = Line聊天室ID
 	# event.message.text = 使用者輸入訊息
-	#req = Request_Handle(event, False) # 以thread生成
+	req = Request_Handle(event, False) # 以thread生成
+	"""
 	thread = threading.Thread(target = Threading_Handle, args = (event, False)) # 以thread生成
 	thread.start()
+	"""
 
 if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下列程式碼
 	print("\n######### main ########")

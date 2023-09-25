@@ -610,7 +610,8 @@ class Request_Handle():
 		return TextSendMessage(text = msg)
 
 # 監聽所有來自'.../'的 Post Request
-@app.route("/", methods = ['POST'])
+@app.route("/callback", methods=['POST'])
+#@app.route("/", methods = ['POST'])
 def linebot(): # 每個訊息的首站
 	print("\n######### linebot running ########")
 	signature = request.headers['X-Line-Signature'] # get X-Line-Signature header value

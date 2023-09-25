@@ -652,6 +652,7 @@ def handle_message(event):
 	thread.start()
 	"""
 
+"""
 if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下列程式碼
 	print("\n######### main ########")
 	Read_All_Data2()
@@ -660,8 +661,7 @@ if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下�
 	app.run(host='0.0.0.0', port = port) # 以linebot()接收請求
 """
 print("\n######### main ########")
-Read_All_Data2()
 KNN_Recommend()
+Read_All_Data2()
 port = int(os.environ.get('PORT', 5000))
 app.run(host='0.0.0.0', port = port) # 以linebot()接收請求
-"""

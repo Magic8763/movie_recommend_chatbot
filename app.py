@@ -72,7 +72,7 @@ def writeVar(obj, drt, fname):
 def readVar(drt, fname, return_dict=False):
 	obj = {} if return_dict else []
 	if os.path.exists(drt+'/'+fname+'.pkl'):
-		with open(drt+'/'+fname, 'rb') as file:
+		with open(drt+'/'+fname+'.pkl', 'rb') as file:
 			obj = pickle.load(file)
 	return obj
 

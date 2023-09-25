@@ -42,7 +42,7 @@ default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imd
 playing_k = 20 # 近期上映的前k部電影
 carousel_size = 20 # 旋轉模板長度上限
 
-class Movie2():
+class Movie2:
 	def __init__(self, id = None, name = None, title = None, t = None):
 		self.id = id
 		self.nameEnglish = name
@@ -117,7 +117,7 @@ def KNN_Recommend():
 def Translater(buffer, ch):
 	return [genres_dict[tp][ch] for tp in buffer]
 
-class Request_Handle():
+class Request_Handle:
 	def __init__(self, event, isPostback=False):
 		uid = str(event.source.user_id)
 		status_dict = readVar('user', uid, True)
@@ -661,7 +661,7 @@ if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下�
 	app.run(host='0.0.0.0', port = port) # 以linebot()接收請求
 """
 print("\n######### main ########")
-KNN_Recommend()
 Read_All_Data2()
+KNN_Recommend()
 port = int(os.environ.get('PORT', 5000))
 app.run(host='0.0.0.0', port = port) # 以linebot()接收請求

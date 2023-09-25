@@ -6,7 +6,7 @@ from linebot.models import (
 	PostbackEvent, PostbackTemplateAction, URITemplateAction,
 	CarouselColumn, CarouselTemplate, ButtonsTemplate, ConfirmTemplate
 )
-from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake, Get_RadarEcho, Movie2
+from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake, Get_RadarEcho
 import os
 import random
 import datetime
@@ -42,6 +42,17 @@ default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imd
 playing_k = 20 # 近期上映的前k部電影
 carousel_size = 20 # 旋轉模板長度上限
 
+class Movie2:
+	def __init__(self, id = None, name = None, title = None, t = None):
+		self.id = id
+		self.nameEnglish = name
+		self.title = title
+		self.year = t
+		self.genres = []
+		self.grade = None
+		self.imdbId = None
+		self.picture= None
+
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):
 		os.mkdir(drt)
@@ -59,6 +70,7 @@ def readVar(drt, fname, return_dict=False):
 def Read_All_Data2():
 	print("######### Read_All_Data2 ########")
 	global movieTable, genresTable, nameTable
+	"""
 	movieTable = readVar('var', 'movieTable')
 	genresTable = readVar('var', 'genresTable')
 	nameTable = readVar('var', 'nameTable', True)
@@ -67,7 +79,9 @@ def Read_All_Data2():
 		print('  genresTable:', len(genresTable))
 		print('  nameTable:', len(nameTable))
 		return
+	"""
 	df = pd.read_csv('data/movies_extended_known_sorted.csv', sep = ',')
+	movieTable, nameTable = [], {}
 	genresTable = [[] for _ in range(0, len(genres_dict))]
 	for i in range(0, len(df)):
 		movieId, movieName, movieTitle = str(df['movieId'].iloc[i]), str(df['nameEnglish'].iloc[i]), str(df['title'].iloc[i])

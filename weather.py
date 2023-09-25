@@ -4,17 +4,6 @@ import requests, json, statistics
 # 氣象資料開放平台授權碼
 AuthorizationCode = 'CWB-45F8D359-2DA6-421F-ADB5-5E2D95D5734E'
 
-class Movie2:
-	def __init__(self, id = None, name = None, title = None, t = None):
-		self.id = id
-		self.nameEnglish = name
-		self.title = title
-		self.year = t
-		self.genres = []
-		self.grade = None
-		self.imdbId = None
-		self.picture= None
-
 # 本地天氣狀況
 def Get_Weather(address):
 	city_list, area_list, area_list2 = {}, {}, {} # 定義好待會要用的變數

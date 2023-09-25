@@ -6,7 +6,7 @@ from linebot.models import (
 	PostbackEvent, PostbackTemplateAction, URITemplateAction,
 	CarouselColumn, CarouselTemplate, ButtonsTemplate, ConfirmTemplate
 )
-from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake, Get_RadarEcho
+from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake, Get_RadarEcho, Movie2
 import os
 import random
 import datetime
@@ -41,17 +41,6 @@ missing_picture = 'https://cdn0.techbang.com/system/excerpt_images/55555/origina
 default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imdb_logo.png'
 playing_k = 20 # 近期上映的前k部電影
 carousel_size = 20 # 旋轉模板長度上限
-
-class Movie2:
-	def __init__(self, id = None, name = None, title = None, t = None):
-		self.id = id
-		self.nameEnglish = name
-		self.title = title
-		self.year = t
-		self.genres = []
-		self.grade = None
-		self.imdbId = None
-		self.picture= None
 
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):
@@ -152,13 +141,11 @@ class Request_Handle:
 	def Message_text(self, event):
 		if self.status in (2, 5):
 			print('  >>> 電影推薦機器人 <<<')
-			#Restore_Status(id)
 			if self.status == 2: # 關鍵字搜尋
 				message = self.Search_Movie2(1, event.message.text)
 			elif self.status == 5: # 給予評分
 				message = self.Score_message(event.message.text)
 			self.status = 0
-			#Store_Status(id)
 		elif event.message.type == 'location':
 			print('  >>> 氣象預報機器人 <<<')
 			address = event.message.address
@@ -169,7 +156,6 @@ class Request_Handle:
 			if len(text) > 9 and text[:9] == "@電影推薦機器人：":
 				print('  >>> 電影推薦機器人 <<<')
 				text = text[9:]
-				#Restore_Status(id)
 				if text == "近期上映":
 					message = self.Get_Playing2(1)
 				elif text == "關鍵字搜尋":
@@ -182,7 +168,6 @@ class Request_Handle:
 				else:
 					self.status = 0
 					message = self.Menu(None, 0)
-				#Store_Status(id)
 			elif text == "@雷達回波圖":
 				print('  >>> 雷達回波圖 <<<')
 				message = Get_RadarEcho()

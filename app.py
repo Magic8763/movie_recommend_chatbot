@@ -60,6 +60,7 @@ def readVar(drt, fname, return_dict=False):
 def Read_All_Data2():
 	print("######### Read_All_Data2 ########")
 	global movieTable, genresTable, nameTable
+	"""
 	genresTable = readVar('var', 'genresTable')
 	print('  genresTable:', len(genresTable))
 	nameTable = readVar('var', 'nameTable', True)
@@ -68,6 +69,7 @@ def Read_All_Data2():
 	print('  movieTable:', len(movieTable))
 	if movieTable and genresTable and nameTable:
 		return
+	"""
 	df = pd.read_csv('data/movies_extended_known_sorted.csv', sep = ',')
 	movieTable, nameTable = [], {}
 	genresTable = [[] for _ in range(0, len(genres_dict))]

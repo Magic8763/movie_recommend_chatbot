@@ -46,21 +46,26 @@ carousel_size = 20 # 旋轉模板長度上限
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):
 		os.mkdir(drt)
-	with open(drt+'/'+fname+'.pkl', 'wb') as file:
-		pickle.dump(obj, file)
+	try:
+		with open(drt+'/'+fname+'.pkl', 'wb') as file:
+			pickle.dump(obj, file)
+	except:
+		print('File exist, but open error.')
 
 def readVar(drt, fname, return_dict=False):
 	obj = {} if return_dict else []
 	if os.path.exists(drt+'/'+fname+'.pkl'):
-		with open(drt+'/'+fname+'.pkl', 'rb') as file:
-			obj = pickle.load(file)
+		try:
+			with open(drt+'/'+fname+'.pkl', 'rb') as file:
+				obj = pickle.load(file)
+		except:
+			print('File exist, but open error.')
 	return obj
 
 # 讀資料檔
 def Read_All_Data2():
 	print("######### Read_All_Data2 ########")
 	global movieTable, genresTable, nameTable
-	"""
 	genresTable = readVar('var', 'genresTable')
 	print('  genresTable:', len(genresTable))
 	nameTable = readVar('var', 'nameTable', True)
@@ -69,7 +74,6 @@ def Read_All_Data2():
 	print('  movieTable:', len(movieTable))
 	if movieTable and genresTable and nameTable:
 		return
-	"""
 	df = pd.read_csv('data/movies_extended_known_sorted.csv', sep = ',')
 	movieTable, nameTable = [], {}
 	genresTable = [[] for _ in range(0, len(genres_dict))]

@@ -93,8 +93,11 @@ def Read_All_Data2():
 		else:
 			movie.picture = missing_picture
 		movieTable.append(movie)
+	print('  movieTable:', len(movieTable))
 	writeVar(movieTable, 'var', 'movieTable')
+	print('  genresTable:', len(genresTable))
 	writeVar(genresTable, 'var', 'genresTable')
+	print('  nameTable:', len(nameTable))
 	writeVar(nameTable, 'var', 'nameTable')
 
 # KNN推薦結果

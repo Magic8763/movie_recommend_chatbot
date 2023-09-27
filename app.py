@@ -74,8 +74,8 @@ def Read_All_Data2():
 	print('  movieTable:', len(movieTable))
 	if movieTable and genresTable and nameTable:
 		return
-	df = pd.read_csv('data/movies_extended_known_sorted.csv', sep = ',')
-	movieTable, nameTable = [], {}
+	df = pd.read_csv('data/movies_extended_known_sorted_fixed.csv', sep = ',')
+	#movieTable, nameTable = [], {}
 	genresTable = [[] for _ in range(0, len(genres_dict))]
 	for i in range(0, len(df)):
 		movieId, movieName, movieTitle = str(df['movieId'].iloc[i]), str(df['nameEnglish'].iloc[i]), str(df['title'].iloc[i])
@@ -555,16 +555,14 @@ class Request_Handle:
 		print("######### Search_Movie2 ########")
 		if type == 1:
 			movie_name = input_text.lower().replace(' ', '')
-			"""
-			self.buffer2 = []
-			for movie in movieTable:
-				if movie_name in movie.nameEnglish or movie_name in movie.title:
-					self.buffer2.append(movie)
-			"""
-			self.buffer2 = [movie for movie in movieTable if movie_name in movie.nameEnglish or movie_name in movie.title]
+			matched = [(len(movie.title), i) for i, movie in enumerate(movieTable) if movie_name in movie.nameEnglish or movie_name in movie.title]
+			matched.sort(key = lambda x: (x[0], -x[1]))
+			self.buffer2 = [movieTable[i] for _, i in matched[:20]]
 			if self.buffer2:
 				sub = min(5, len(self.buffer2))
 				sub_buffer = self.buffer2[0:sub]
+				if sub == 1: # 查詢只找到一部電影時將加入追蹤清單
+					self.Update_Searched(sub_buffer[0].id)
 				msg = self.Carousel_template2(sub_buffer, input_text, 2)
 			else: # 沒有找到電影
 				msg = TemplateSendMessage(
@@ -627,11 +625,11 @@ def Threading_Handle(event, isPostback=False):
 @handler.add(PostbackEvent)
 def handle_postback(event):
 	print("######### handle_postback ########")
+	"""
 	req = Request_Handle(event, True)
 	"""
 	thread = threading.Thread(target = Threading_Handle, args = (event, True)) # 以thread生成
 	thread.start()
-	"""
 
 # 處理"訊息發送"
 @handler.add(MessageEvent)
@@ -642,11 +640,11 @@ def handle_message(event):
 	# event.source.user_id = 使用者Line帳戶ID
 	# event.source.room_id = Line聊天室ID
 	# event.message.text = 使用者輸入訊息
+	"""
 	req = Request_Handle(event, False) # 以thread生成
 	"""
 	thread = threading.Thread(target = Threading_Handle, args = (event, False)) # 以thread生成
 	thread.start()
-	"""
 
 """
 if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下列程式碼

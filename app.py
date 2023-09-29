@@ -29,9 +29,15 @@ handler = WebhookHandler('f618a9e80020ea18a0a16b2c4643bbb5')
 openai.api_key = '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'
 """
 # Environment variables on Render
-line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
-handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
-openai.api_key = os.getenv('OPENAI_API_KEY')
+k = os.environ.get('CHANNEL_ACCESS_TOKEN')
+print(k == 't6pQxlob2d6HG7eli4Ck0y0yq49zE03JiedrVk2rjmHu3StIrdyGijxM+jQqXj+oSniedXwjZqkuHNZHntBe8k1hf2qccsdJsgaEPvAVHfNb6wJ6LX3zmiLACCJQ1/leSRmgaXWecMZq48aMVYEvqQdB04t89/1O/w1cDnyilFU=')
+line_bot_api = LineBotApi(os.environ.get('CHANNEL_ACCESS_TOKEN'))
+k = os.environ.get('CHANNEL_SECRET')
+print(k == 'f618a9e80020ea18a0a16b2c4643bbb5')
+handler = WebhookHandler(os.environ.get('CHANNEL_SECRET'))
+k = os.environ.get('OPENAI_API_KEY')
+print(k == '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')
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 genres_dict = {'Documentary': (0, '紀錄'), 'Comedy': (1, '喜劇'), 'Crime': (2, '犯罪'),
 			'War': (3, '戰爭'), 'Musical': (4, '歌舞'), 'Western': (5, '西部'),

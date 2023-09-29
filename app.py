@@ -19,12 +19,19 @@ import threading
 import time
 
 app = Flask(__name__)
+"""
 # Channel Access Token(YOUR_CHANNEL_ACCESS_TOKEN)
 line_bot_api = LineBotApi('t6pQxlob2d6HG7eli4Ck0y0yq49zE03JiedrVk2rjmHu3StIrdyGijxM+jQqXj+oSniedXwjZqkuHNZHntBe8k1hf2qccsdJsgaEPvAVHfNb6wJ6LX3zmiLACCJQ1/leSRmgaXWecMZq48aMVYEvqQdB04t89/1O/w1cDnyilFU=')
 # Channel Secret(YOUR_CHANNEL_SECRET)
 handler = WebhookHandler('f618a9e80020ea18a0a16b2c4643bbb5')
 # OPENAI_API_KEY
-openai.api_key = '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'
+# openai.api_key = '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' # 已過期
+openai.api_key = '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'
+"""
+# Environment variables on Render
+line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
+handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 genres_dict = {'Documentary': (0, '紀錄'), 'Comedy': (1, '喜劇'), 'Crime': (2, '犯罪'),
 			'War': (3, '戰爭'), 'Musical': (4, '歌舞'), 'Western': (5, '西部'),

@@ -19,25 +19,10 @@ import threading
 import time
 
 app = Flask(__name__)
-"""
-# Channel Access Token(YOUR_CHANNEL_ACCESS_TOKEN)
-line_bot_api = LineBotApi('t6pQxlob2d6HG7eli4Ck0y0yq49zE03JiedrVk2rjmHu3StIrdyGijxM+jQqXj+oSniedXwjZqkuHNZHntBe8k1hf2qccsdJsgaEPvAVHfNb6wJ6LX3zmiLACCJQ1/leSRmgaXWecMZq48aMVYEvqQdB04t89/1O/w1cDnyilFU=')
-# Channel Secret(YOUR_CHANNEL_SECRET)
-handler = WebhookHandler('f618a9e80020ea18a0a16b2c4643bbb5')
-# OPENAI_API_KEY
-# openai.api_key = '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' # 已過期
-openai.api_key = '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'
-"""
 # Environment variables on Render
-k = os.environ.get('CHANNEL_ACCESS_TOKEN')
-print(k == 't6pQxlob2d6HG7eli4Ck0y0yq49zE03JiedrVk2rjmHu3StIrdyGijxM+jQqXj+oSniedXwjZqkuHNZHntBe8k1hf2qccsdJsgaEPvAVHfNb6wJ6LX3zmiLACCJQ1/leSRmgaXWecMZq48aMVYEvqQdB04t89/1O/w1cDnyilFU=')
-line_bot_api = LineBotApi(os.environ.get('CHANNEL_ACCESS_TOKEN'))
-k = os.environ.get('CHANNEL_SECRET')
-print(k == 'f618a9e80020ea18a0a16b2c4643bbb5')
-handler = WebhookHandler(os.environ.get('CHANNEL_SECRET'))
-k = os.environ.get('OPENAI_API_KEY')
-print(k == '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')
-openai.api_key = os.environ.get('OPENAI_API_KEY')
+line_bot_api = LineBotApi(os.environ.get('CHANNEL_ACCESS_TOKEN')) # Channel Access Token
+handler = WebhookHandler(os.environ.get('CHANNEL_SECRET')) # Channel Secret
+openai.api_key = os.environ.get('OPENAI_API_KEY') # OPENAI_API_KEY
 
 genres_dict = {'Documentary': (0, '紀錄'), 'Comedy': (1, '喜劇'), 'Crime': (2, '犯罪'),
 			'War': (3, '戰爭'), 'Musical': (4, '歌舞'), 'Western': (5, '西部'),

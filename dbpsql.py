@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI'
 db = SQLAlchemy(app) # pip3 install psycopg2-binary
 
 class userRatings(db.Model):
-	__tablename__ = 'userratings'
+	__tablename__ = 'userRatings'
 	__table_args__ = {'keep_existing': True}
 	id = db.Column(db.Integer, primary_key = True)
 	uid = db.Column(db.String(40))

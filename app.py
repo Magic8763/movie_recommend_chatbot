@@ -8,6 +8,7 @@ from linebot.models import (
 )
 from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake, Get_RadarEcho
 from movie_class import Movie2
+from dbpsql import userRatings
 import os
 import random
 import datetime
@@ -38,8 +39,8 @@ genres_dict = {'Documentary': (0, '紀錄'), 'Comedy': (1, '喜劇'), 'Crime': (
 honmpage_picture = 'https://attach.setn.com/newsimages/2017/02/10/805406-XXL.jpg'
 missing_picture = 'https://cdn0.techbang.com/system/excerpt_images/55555/original/d5045073e258563e2b62eed24605cd60.png?1512550227'
 default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imdb_logo.png'
-playing_k = 20 # 近期上映的前k部電影
 carousel_size = 20 # 旋轉模板長度上限
+playing_k = min(carousel_size, 20) # 近期上映的前k部電影
 
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):
@@ -174,7 +175,7 @@ class Request_Handle:
 				elif text == "智慧推薦":
 					message = self.Recommend2()
 				elif text == "評分紀錄":
-					message = self.Read_Personal_Record(True)
+					message = self.Read_Personal_Record()
 				else:
 					self.status = 0
 					message = self.Menu(None, 0)
@@ -217,7 +218,7 @@ class Request_Handle:
 		elif event.postback.data == 'action=3-3':
 			message = self.Same_Category3(None, 3)
 		elif event.postback.data == 'action=4-1':
-			message = self.Read_Personal_Record(True)
+			message = self.Read_Personal_Record()
 		elif event.postback.data[0:10] == 'action=5-1':
 			self.status = 5
 			self.scoring = event.postback.data.split('\n')[1:]
@@ -493,34 +494,27 @@ class Request_Handle:
 	# 更新紀錄檔
 	def Save_Personal_Record(self, movieId, num):
 		print("######### Save_Personal_Record ########")
-		if not os.path.exists('ratings'):
-			os.mkdir('ratings')
-		today = datetime.datetime.now()
-		try:
-			f = open('ratings/HS_'+self.uid+'.txt', 'a', encoding = 'utf8')
-			record_str = self.uid+'\t'+str(today.year)+'\t'+str(today.month)+'\t'+str(today.day)+'\t'+movieId+'\t'+str(num)+'\n'
-			f.write(record_str)
-			f.close()
-		except IOError:
-			print('更新紀錄檔失敗')
+		userRatings.Record_adder(self.uid, movieId, num)
 
 	# 讀取紀錄檔
-	def Read_Personal_Record(self, get_msg = True):
+	def Read_Personal_Record(self):
 		print("######### Read_Personal_Record ########")
-		if not os.path.exists('ratings'):
-			os.mkdir('ratings')
-		try:
-			with open('ratings/HS_'+self.uid+'.txt', 'r', encoding = 'utf8') as f:
-				read = f.readlines()
-			record_str = ''
-			for infile in read:
-				info = infile.split('\t')
-				movieTitle = nameTable[info[4]][1]
-				record_str = info[1]+'/'+info[2]+'/'+info[3]+' ['+movieTitle+']: '+info[5]+record_str 
-			msg = TextSendMessage(text = record_str) if get_msg else nameTable[info[4]][0] # get_msg==False時返回最後一次評分的電影idx
-		except IOError:
-			msg = TextSendMessage(text = '查無本id的紀錄') if get_msg else None
-		return msg
+		records = userRatings.Record_reader(self.uid)
+		if not records:
+			return TextSendMessage(text = '您尚未完成電影評分')
+		else:
+			catched = min(10, len(records))
+			records.reverse()
+			date = str(records[0].timestamp).split(' ')[0]
+			date = date.replace('-', '/')
+			movieTitle = nameTable[records[0].movie][1]
+			record_str = '您的最近'+str(catched)+'筆評分紀錄\n'+date+' ['+movieTitle+']: '+str(records[0].rating)
+			for i in range(1, catched): # 僅輸出最近最多10筆的評分紀錄
+				date = str(records[i].timestamp).split(' ')[0]
+				date = date.replace('-', '/')
+				movieTitle = nameTable[records[i].movie][1]
+				record_str += '\n'+date+' ['+movieTitle+']: '+str(records[i].rating)
+			return TextSendMessage(text = record_str)
 
 	# 追蹤最近(給予評分/同類推薦)的3部電影idx
 	def Update_Searched(self, movieId):

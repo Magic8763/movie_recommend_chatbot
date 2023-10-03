@@ -3,6 +3,8 @@ import requests, json, statistics
 
 # 氣象資料開放平台授權碼
 AuthorizationCode = 'CWB-45F8D359-2DA6-421F-ADB5-5E2D95D5734E'
+# 雷達回波圖
+RadarEcho_url = 'https://cwbopendata.s3.ap-northeast-1.amazonaws.com/MSC/O-A0058-003.png'
 
 # 本地天氣狀況
 def Get_Weather(address):
@@ -156,8 +158,3 @@ def Get_Earthquake():
 	except:
 		pass
 	return ('找不到地震資訊。', None)
-
-# 雷達回波圖
-def Get_RadarEcho():
-	return ImageSendMessage(original_content_url = 'https://cwbopendata.s3.ap-northeast-1.amazonaws.com/MSC/O-A0058-003.png',
-							preview_image_url = 'https://cwbopendata.s3.ap-northeast-1.amazonaws.com/MSC/O-A0058-003.png')

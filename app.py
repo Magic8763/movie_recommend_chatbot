@@ -6,7 +6,7 @@ from linebot.models import (
 	PostbackEvent, PostbackTemplateAction, URITemplateAction,
 	CarouselColumn, CarouselTemplate, ButtonsTemplate, ConfirmTemplate
 )
-from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake, Get_RadarEcho
+from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake
 from movie_class import Movie2
 from dbpsql import userRatings
 import os
@@ -181,7 +181,7 @@ class Request_Handle:
 					message = self.Menu(None, 0)
 			elif text == "@雷達回波圖":
 				print('  >>> 雷達回波圖 <<<')
-				message = Get_RadarEcho()
+				message = self.Get_RadarEcho()
 			elif text == "@地震資訊":
 				print('  >>> 地震資訊 <<<')
 				msg, img = Get_Earthquake()
@@ -568,6 +568,10 @@ class Request_Handle:
 			else:
 				msg = TextSendMessage(text = '沒有更多電影')
 		return msg
+
+	# 雷達回波圖
+	def Get_RadarEcho(self):
+		return ImageSendMessage(original_content_url = RadarEcho_url, preview_image_url = RadarEcho_url)
 
 	# 以ChatGPT回覆訊息
 	def Call_ChatGPT(self, text):

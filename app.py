@@ -6,7 +6,7 @@ from linebot.models import (
 	PostbackEvent, PostbackTemplateAction, URITemplateAction,
 	CarouselColumn, CarouselTemplate, ButtonsTemplate, ConfirmTemplate
 )
-from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake
+from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake, RadarEcho_url
 from movie_class import Movie2
 from dbpsql import userRatings
 import os

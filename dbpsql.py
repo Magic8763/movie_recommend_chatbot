@@ -1,6 +1,6 @@
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy # pip install flask_sqlalchemy
 import datetime
 import os
 
@@ -19,7 +19,7 @@ class userRatings(db.Model):
 	timestamp = db.Column(db.TIMESTAMP, default = datetime.datetime.now)
 
 	def __init__(self, userId, movieId, rating):
-		# 不assign self.id,self.timestamp時, 兩者便會自動使用預設值
+		# 不assign self.id,self.timestamp時, 兩者便會自動採用預設值
 		self.uid = userId
 		self.movie = movieId
 		self.rating = rating
@@ -40,3 +40,7 @@ class userRatings(db.Model):
 		with app.app_context():
 			records = userRatings.query.filter_by(uid = userId).all()
 		return records
+
+#if __name__ == '__main__':
+# 	with app.app_context():
+# 		db.create_all() # 創建資料表

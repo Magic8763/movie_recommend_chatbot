@@ -40,7 +40,6 @@ honmpage_picture = 'https://attach.setn.com/newsimages/2017/02/10/805406-XXL.jpg
 missing_picture = 'https://cdn0.techbang.com/system/excerpt_images/55555/original/d5045073e258563e2b62eed24605cd60.png?1512550227'
 default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imdb_logo.png'
 carousel_size = 20 # 旋轉模板長度上限
-playing_k = min(carousel_size, 20) # 近期上映的前k部電影
 
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):
@@ -82,11 +81,12 @@ def Read_All_Data2():
 		movie = Movie2(movieId, movieName, movieTitle, str(df['year'].iloc[i]))
 		if df['genres'].iloc[i] != 'N/A' and df['genres'].iloc[i] != '(no genres listed)':
 			movie.genres = str(df['genres'].iloc[i]).split('|')
-			for tp in movie.genres: # 電影分類
-				genresTable[genres_dict[tp][0]].append(i)
 		movie.imdbId = 'https://www.imdb.com/title/'+str(df['imdbId'].iloc[i])
 		if df['grade'].iloc[i] != 'N/A':
 			movie.grade = str(df['grade'].iloc[i])
+			if float(movie.grade) >= 7.0:
+				for tp in movie.genres: # 分類評分>=7.0的電影
+					genresTable[genres_dict[tp][0]].append(i)
 		if df['picture'].iloc[i] != 'N/A':
 			movie.picture = str(df['picture'].iloc[i])
 		else:
@@ -132,28 +132,28 @@ class Request_Handle:
 		writeVar(status_dict, 'user', uid)
 
 	def new_user(self, uid):
-		self.uid, self.status, self.phase = uid, 0, 0 # phase尚未使用
-		self.GP_ii, self.SC_ii, self.SC_jj = 0, 0, 0
-		self.category2, self.category3, self.buffer2 = [], [], []
-		self.scoring, self.aibuf, self.searched = [], [], [] # searched: 追蹤最近查詢/評分/點擊的3部電影idx
+		self.uid, self.status, self.GP_end = uid, 0, 0
+		self.genres_buff = {} # genres_buff = {類別: 推薦清單}
+		self.keyword_buff, self.ai_buff = [], []
+		self.scoring, self.searched = [], [] # searched: 追蹤最近查詢/評分/點擊的3部電影idx
 
 	def load_status(self, status_dict):
-		self.uid, self.status, self.phase = status_dict['uid'], status_dict['status'], status_dict['phase']
-		self.GP_ii, self.SC_ii, self.SC_jj = status_dict['GP_ii'], status_dict['SC_ii'], status_dict['SC_jj']
-		self.category2, self.category3, self.buffer2 = status_dict['category2'], status_dict['category3'], status_dict['buffer2']
-		self.scoring, self.aibuf, self.searched = status_dict['scoring'], status_dict['aibuf'], status_dict['searched']
+		self.uid, self.status, self.GP_end = status_dict['uid'], status_dict['status'], status_dict['GP_end']
+		self.genres_buff = status_dict['genres_buff']
+		self.keyword_buff, self.ai_buff = status_dict['keyword_buff'], status_dict['ai_buff']
+		self.scoring, self.searched = status_dict['scoring'], status_dict['searched']
 
 	def save_status(self):
-		return {'uid': self.uid, 'status': self.status, 'phase': self.phase,
-				'GP_ii': self.GP_ii, 'SC_ii': self.SC_ii, 'SC_jj': self.SC_jj,
-				'category2': self.category2, 'category3': self.category3, 'buffer2': self.buffer2,
-				'scoring': self.scoring, 'aibuf': self.aibuf, 'searched': self.searched}
+		return {'uid': self.uid, 'status': self.status, 'GP_end': self.GP_end,
+				'genres_buff': self.genres_buff,
+				'keyword_buff': self.keyword_buff, 'ai_buff': self.ai_buff,
+				'scoring': self.scoring, 'searched': self.searched}
 
 	def Message_text(self, event):
 		if self.status in (2, 5):
 			print('  >>> 電影推薦機器人 <<<')
 			if self.status == 2: # 關鍵字搜尋
-				message = self.Search_Movie2(1, event.message.text)
+				message = self.Keyword_Search(1, event.message.text)
 			elif self.status == 5: # 給予評分
 				message = self.Score_message(event.message.text)
 			self.status = 0
@@ -205,7 +205,7 @@ class Request_Handle:
 			self.status = 2
 			message = TextSendMessage(text = '請輸入欲查詢的電影名稱(英文)')
 		elif event.postback.data == 'action=2-2': # 關鍵字搜尋附帶頁: 顯示更多
-			message = self.Search_Movie2(2)
+			message = self.Keyword_Search(2)
 		elif event.postback.data == 'action=2-3': # 關鍵字搜尋失敗, self.status歸零
 			self.status = 0
 			message = TextSendMessage(text = '關鍵字搜尋結束')
@@ -404,27 +404,25 @@ class Request_Handle:
 	def Get_Playing2(self, type):
 		print("######### Get_Playing2 ########")
 		if type == 1:
-			self.GP_ii = len(movieTable)-playing_k
-		if self.GP_ii < len(movieTable):
-			sub = min(self.GP_ii+5, len(movieTable))
-			sub_buffer = movieTable[self.GP_ii:sub]
+			self.GP_end = 0
+		GP_start = self.GP_end-5
+		sub_buffer = movieTable[GP_start:self.GP_end] if self.GP_end < 0 else movieTable[GP_start:]
+		if sub_buffer:
 			msg = self.Carousel_template2(sub_buffer, None, 1)
-			self.GP_ii = sub
-		elif type == 1:
-			msg = TextSendMessage(text = '沒有任何電影')
-		elif type == 2:
-			self.GP_ii = len(movieTable)-playing_k
-			msg = TextSendMessage(text = '沒有更多電影')
+			self.GP_end = GP_start
+		else:
+			msg = TextSendMessage(text = '沒有任何電影') if type == 1 else  TextSendMessage(text = '沒有更多電影')
 		return msg
 
 	# 相關性同類推薦
 	def Same_Category3(self, text, type):
 		print("######### Same_Category3 ########")
+		print("######### Same_Category3 ########")
 		if type == 1: # 同類推薦
-			self.category2, self.category3 = [], [] # 電影清單, 類型清單
 			movieidx, genres_english = int(text[-1]), text[:-1]
 			cpbuf = set(recommends[movieidx]) if movieidx in recommends.keys() else set() # 優先從KNN推薦結果中篩選具有相同類型者
-			genres_indices, genres_zhtw = Translater(genres_english, 0), Translater(genres_english, 1)
+			genres_indices = Translater(genres_english, 0)
+			self.genres_buff = {}
 			for l in range(0, len(genres_english)):
 				tybuf = set()
 				for cp in cpbuf:
@@ -436,34 +434,25 @@ class Request_Handle:
 				scbuf = [movieTable[tp] for tp in tybuf]
 				random.shuffle(scbuf)
 				if scbuf:
-					self.category2.append(scbuf)
-					self.category3.append(genres_zhtw[l])
-			self.SC_ii = 0
-			if self.category2:
-				self.SC_jj = min(self.SC_ii+5, len(self.category2[0]))
-				msg = self.Carousel_template2(self.category2[0][self.SC_ii:self.SC_jj], self.category3[0], 3)
-			else:
-				msg = TextSendMessage(text = '沒有同類電影')
-		elif type == 2: # 顯示更多
-			if len(self.category2[0])-self.SC_jj >= 1:
-				self.SC_ii = self.SC_jj
-				self.SC_jj = min(self.SC_ii+5, len(self.category2[0]))
-				msg = self.Carousel_template2(self.category2[0][self.SC_ii:self.SC_jj], self.category3[0], 3)
-			else:
-				msg = TextSendMessage(text = '沒有更多電影')
-		elif type == 3: # 下個類型
-			if len(self.category2) > 1:
-				self.category2, self.category3 = self.category2[1:], self.category3[1:]
-				self.SC_jj = min(5, len(self.category2[0]))
-				msg = self.Carousel_template2(self.category2[0][:self.SC_jj], self.category3[0], 3)
-			else:
-				msg = TextSendMessage(text = '沒有更多類型')
-		return msg
+					self.genres_buff[genres_english[l]] = scbuf
+		if type == 3: # 換下個類型
+			if not self.genres_buff:
+				return TextSendMessage(text = '沒有更多類型')
+			key = next(iter(self.genres_buff))
+			del self.genres_buff[key]
+		if self.genres_buff:
+			key = next(iter(self.genres_buff))
+			if self.genres_buff[key]:
+				genres_zhtw = genres_dict[key][1]
+				msg = self.Carousel_template2(self.genres_buff[key][:5], genres_zhtw, 3)
+				self.genres_buff[key] = self.genres_buff[key][5:]
+				return msg
+		return TextSendMessage(text = '沒有更多電影') if type == 1 else TextSendMessage(text = '沒有同類電影')
 
 	# 直接推薦
-	def Recommend2(self, get_more=False):
+	def Recommend2(self, get_more = False):
 		print("######### Recommend2 ########")
-		if get_more and not self.aibuf:
+		if get_more and not self.ai_buff:
 			return TextSendMessage(text = '沒有更多電影')
 		elif not get_more:
 			picked = set()
@@ -485,11 +474,10 @@ class Request_Handle:
 				movieidx = random.sample(range(0, len(movieTable)), 1)
 				if movieidx not in picked:
 					buf.append(movieidx)
-			self.aibuf = [movieTable[i] for i in buf]
-		sub_buffer = self.aibuf[:5]
-		self.aibuf = self.aibuf[5:]
-		msg = self.Carousel_template2(sub_buffer, None, 4)
-		return msg
+			self.ai_buff = [movieTable[i] for i in buf]
+		sub_buffer = self.ai_buff[:5]
+		self.ai_buff = self.ai_buff[5:]
+		return self.Carousel_template2(sub_buffer, None, 4)
 
 	# 更新紀錄檔
 	def Save_Personal_Record(self, movieId, num):
@@ -535,7 +523,6 @@ class Request_Handle:
 			if num > 5:
 				self.Update_Searched(movieId)
 			self.Save_Personal_Record(movieId, num)
-			#self.Save_Personal_Record(movieName, num)
 			print('****'+ self.uid+'****'+movieId+'****'+movieName+'****'+str(num)+'****')
 			msg = TextSendMessage(text = '已評分')		
 		except ValueError:
@@ -543,19 +530,19 @@ class Request_Handle:
 		return msg
 
 	# 關鍵字搜尋
-	def Search_Movie2(self, type, input_text = ''):
-		print("######### Search_Movie2 ########")
+	def Keyword_Search(self, type, input_text = ''):
+		print("######### Keyword_Search ########")
 		if type == 1:
 			movie_name = input_text.lower().replace(' ', '')
 			matched = [(len(movie.title), i) for i, movie in enumerate(movieTable) if movie_name in movie.nameEnglish or movie_name in movie.title]
 			matched.sort(key = lambda x: (x[0], -x[1]))
-			self.buffer2 = [movieTable[i] for _, i in matched[:20]]
-			if self.buffer2:
-				sub = min(5, len(self.buffer2))
-				sub_buffer = self.buffer2[0:sub]
-				if sub == 1: # 查詢只找到一部電影時將加入追蹤清單
+			self.keyword_buff = [movieTable[i] for _, i in matched[:20]]
+			if self.keyword_buff:
+				sub_buffer = self.keyword_buff[:5]
+				if len(sub_buffer) == 1: # 查詢只找到一部電影時將加入追蹤清單
 					self.Update_Searched(sub_buffer[0].id)
 				msg = self.Carousel_template2(sub_buffer, input_text, 2)
+				self.keyword_buff = self.keyword_buff[5:]
 			else: # 沒有找到電影
 				msg = TemplateSendMessage(
 					alt_text = 'ConfirmTemplate',
@@ -574,13 +561,11 @@ class Request_Handle:
 					)
 				)
 		elif type == 2:
-			if len(self.buffer2) > 5:
-				self.buffer2 = self.buffer2[5:]
-				sub = min(5, len(self.buffer2))
-				sub_buffer = self.buffer2[0:sub]
-				msg = self.Carousel_template2(sub_buffer, None, 2) if self.buffer2 else None
+			if self.keyword_buff:
+				sub_buffer = self.keyword_buff[:5]
+				msg = self.Carousel_template2(sub_buffer, None, 2)
+				self.keyword_buff = self.keyword_buff[5:]
 			else:
-				self.buffer2 = []
 				msg = TextSendMessage(text = '沒有更多電影')
 		return msg
 
@@ -617,9 +602,7 @@ def Threading_Handle(event, isPostback=False):
 @handler.add(PostbackEvent)
 def handle_postback(event):
 	print("######### handle_postback ########")
-	"""
-	req = Request_Handle(event, True)
-	"""
+	#req = Request_Handle(event, True)
 	thread = threading.Thread(target = Threading_Handle, args = (event, True)) # 以thread生成
 	thread.start()
 
@@ -632,9 +615,7 @@ def handle_message(event):
 	# event.source.user_id = 使用者Line帳戶ID
 	# event.source.room_id = Line聊天室ID
 	# event.message.text = 使用者輸入訊息
-	"""
-	req = Request_Handle(event, False) # 以thread生成
-	"""
+	#req = Request_Handle(event, False) # 以thread生成
 	thread = threading.Thread(target = Threading_Handle, args = (event, False)) # 以thread生成
 	thread.start()
 
@@ -644,10 +625,11 @@ if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下�
 	Read_All_Data2()
 	KNN_Recommend()
 	port = int(os.environ.get('PORT', 5000))
+	#app.debug = True
 	app.run(host='0.0.0.0', port = port) # 以linebot()接收請求
 """
 print("\n######### main ########")
 Read_All_Data2()
 KNN_Recommend()
 port = int(os.environ.get('PORT', 5000))
-app.run(host='0.0.0.0', port = port) # 以linebot()接收請求
+app.run(host = '0.0.0.0', port = port) # 以linebot()接收請求

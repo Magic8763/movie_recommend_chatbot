@@ -36,9 +36,11 @@ genres_dict = {'Documentary': (0, '紀錄'), 'Comedy': (1, '喜劇'), 'Crime': (
 			'Biography': (22, '傳記'), 'Music': (23, '音樂'), 'Family': (24, '家庭'),
 			'News': (25, '新聞'), 'Adult': (26, '成人'), 'Reality-TV': (27, '實境秀'),
 			'Talk-Show': (28, '脫口秀')}
-honmpage_picture = 'https://attach.setn.com/newsimages/2017/02/10/805406-XXL.jpg'
-missing_picture = 'https://cdn0.techbang.com/system/excerpt_images/55555/original/d5045073e258563e2b62eed24605cd60.png?1512550227'
-default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imdb_logo.png'
+#honmpage_picture = 'https://attach.setn.com/newsimages/2017/02/10/805406-XXL.jpg'
+honmpage_picture = 'https://media.istockphoto.com/id/1175497926/photo/interior-of-empty-movie-theater-with-red-seats.jpg?s=612x612&w=0&k=20&c=jqQUcMrgwBqE0xbHwkd_eA-JDGQjUwFwnUnF3x0lKto='
+#missing_picture = 'https://cdn0.techbang.com/system/excerpt_images/55555/original/d5045073e258563e2b62eed24605cd60.png?1512550227'
+missing_picture = 'https://media.istockphoto.com/id/1311367104/vector/404-page-not-found-banner-template.jpg?s=612x612&w=0&k=20&c=2o5WdgneLw6S2Bc5NalxJByoKMRnkd1w5O-7UnL5wBs='
+#default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imdb_logo.png'
 carousel_size = 20 # 旋轉模板長度上限
 
 def writeVar(obj, drt, fname):

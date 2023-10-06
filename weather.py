@@ -3,7 +3,7 @@ import requests, json, statistics
 import os
 
 # 氣象資料開放平台授權碼
-AuthorizationCode = os.environ.get('AuthorizationCode')
+AuthorizationCode = os.environ.get('AUTHORIZATION_CODE')
 # 雷達回波圖, 伺服器端未更新為cwa
 RadarEcho_url = 'https://cwbopendata.s3.ap-northeast-1.amazonaws.com/MSC/O-A0058-003.png'
 

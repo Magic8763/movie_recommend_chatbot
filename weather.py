@@ -1,9 +1,10 @@
 
 import requests, json, statistics
+import os
 
 # 氣象資料開放平台授權碼
-AuthorizationCode = 'CWB-45F8D359-2DA6-421F-ADB5-5E2D95D5734E'
-# 雷達回波圖
+AuthorizationCode = os.environ.get('AuthorizationCode')
+# 雷達回波圖, 伺服器端未更新為cwa
 RadarEcho_url = 'https://cwbopendata.s3.ap-northeast-1.amazonaws.com/MSC/O-A0058-003.png'
 
 # 本地天氣狀況
@@ -14,7 +15,7 @@ def Get_Weather(address):
 	def get_data(url):
 		w_data = requests.get(url) # 爬取目前天氣網址的資料
 		w_data_json = w_data.json() # json 格式化訊息內容
-		location = w_data_json['cwbopendata']['location'] # 取出對應地點的內容
+		location = w_data_json['cwaopendata']['location'] # 取出對應地點的內容
 		for i in location:
 			name = i['locationName'] # 測站地點
 			city = i['parameter'][0]['parameterValue'] # 縣市名稱
@@ -43,8 +44,8 @@ def Get_Weather(address):
 
 	try:
 		# 因為目前天氣有兩組網址，兩組都爬取
-		#get_data(f'https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/O-A0001-001?Authorization={AuthorizationCode}&downloadType=WEB&format=JSON')
-		get_data(f'https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/O-A0003-001?Authorization={AuthorizationCode}&downloadType=WEB&format=JSON')
+		#get_data(f'https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/O-A0001-001?Authorization={AuthorizationCode}&downloadType=WEB&format=JSON')
+		get_data(f'https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/O-A0003-001?Authorization={AuthorizationCode}&downloadType=WEB&format=JSON')
 		"""
 		for i in city_list:
 			if i not in area_list2: # 將主要縣市裡的數值平均後，以主要縣市名稱為 key，再度儲存一次，如果找不到鄉鎮區域，就使用平均數值
@@ -71,10 +72,10 @@ def Get_Forecast(address):
 				"連江縣":"F-D0047-081","金門縣":"F-D0047-085"}
 	"""
 	try:
-		url = f'https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization={AuthorizationCode}&downloadType=WEB&format=JSON'
+		url = f'https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization={AuthorizationCode}&downloadType=WEB&format=JSON'
 		f_data = requests.get(url) # 取得主要縣市預報資料
 		f_data_json = f_data.json() # json 格式化訊息內容
-		location = f_data_json['cwbopendata']['dataset']['location'] # 取得全縣市的預報內容
+		location = f_data_json['cwaopendata']['dataset']['location'] # 取得全縣市的預報內容
 		for i in location:
 			city = i['locationName'] # 縣市名稱
 			if city in address:
@@ -85,7 +86,7 @@ def Get_Forecast(address):
 				return f'未來 8 小時{wx8}，最低溫 {mint8} 度，最高溫 {maxt8} 度，降雨機率 {pop8}%。' # 組合成回傳的訊息，存在以縣市名稱為 key 的字典檔裡
 	except:
 		try:
-			url = f'https://opendata.cwb.gov.tw/api/v1/rest/datastore/{json_api[i]}?Authorization={code}&elementName=WeatherDescription'
+			url = f'https://opendata.cwa.gov.tw/api/v1/rest/datastore/{json_api[i]}?Authorization={code}&elementName=WeatherDescription'
 			f_data = requests.get(url)  # 取得主要縣市裡各個區域鄉鎮的氣象預報
 			f_data_json = f_data.json() # json 格式化訊息內容
 			location = f_data_json['records']['locations'][0]['location']	# 取得預報內容
@@ -144,7 +145,7 @@ def Get_AQI(address):
 # 地震資訊
 def Get_Earthquake():
 	try:
-		url = f'https://opendata.cwb.gov.tw/api/v1/rest/datastore/E-A0016-001?Authorization={AuthorizationCode}'
+		url = f'https://opendata.cwa.gov.tw/api/v1/rest/datastore/E-A0016-001?Authorization={AuthorizationCode}'
 		e_data = requests.get(url) # 爬取地震資訊網址	 
 		e_data_json = e_data.json() # json 格式化訊息內容
 		eq = e_data_json['records']['Earthquake'] # 取出地震資訊

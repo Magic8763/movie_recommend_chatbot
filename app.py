@@ -78,7 +78,7 @@ def Read_All_Data2():
 	#movieTable, nameTable = [], {}
 	genresTable = [[] for _ in range(0, len(genres_dict))]
 	for i in range(0, len(df)):
-		movieId, movieName, movieTitle = str(df['movieId'].iloc[i]), str(df['nameEnglish'].iloc[i]), str(df['title'].iloc[i])
+		movieId, movieName, movieTitle = str(df['movieId'].iloc[i]), str(df['letters'].iloc[i]), str(df['title'].iloc[i])
 		nameTable[movieId] = (i, movieTitle)
 		movie = Movie2(movieId, movieName, movieTitle, str(df['year'].iloc[i]))
 		if df['genres'].iloc[i] != 'N/A' and df['genres'].iloc[i] != '(no genres listed)':
@@ -107,7 +107,7 @@ def KNN_Recommend():
 	global recommends
 	recommends = readVar('var', 'recommends', True)
 	if not recommends:
-		df = pd.read_csv('data/knn_recommend_sorted.csv', sep = ',')
+		df = pd.read_csv('data/knn_recommends_sorted.csv', sep = ',')
 		df = df.to_numpy().astype(int)
 		for i in range(0, len(df)):
 			recommends[df[i][0]] = df[i][1:]
@@ -536,7 +536,7 @@ class Request_Handle:
 		print("######### Keyword_Search ########")
 		if type == 1:
 			movie_name = input_text.lower().replace(' ', '')
-			matched = [(len(movie.title), i) for i, movie in enumerate(movieTable) if movie_name in movie.nameEnglish or movie_name in movie.title]
+			matched = [(len(movie.title), i) for i, movie in enumerate(movieTable) if movie_name in movie.letters or movie_name in movie.title]
 			matched.sort(key = lambda x: (x[0], -x[1]))
 			self.keyword_buff = [movieTable[i] for _, i in matched[:20]]
 			if self.keyword_buff:

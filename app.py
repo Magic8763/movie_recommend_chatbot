@@ -74,7 +74,7 @@ def Read_All_Data2():
 	print('  movieTable:', len(movieTable))
 	if movieTable and genresTable and nameTable:
 		return
-	df = pd.read_csv('data/movies_extended_known_sorted_fixed.csv', sep = ',')
+	df = pd.read_csv('data/movies_final.csv', sep = ',')
 	#movieTable, nameTable = [], {}
 	genresTable = [[] for _ in range(0, len(genres_dict))]
 	for i in range(0, len(df)):

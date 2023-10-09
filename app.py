@@ -104,16 +104,16 @@ def Read_All_Data2():
 # KNN推薦結果
 def KNN_Recommend():
 	print("######### KNN_Recommend ########")
-	global recommends
-	recommends = readVar('var', 'recommends', True)
-	if not recommends:
-		df = pd.read_csv('data/knn_recommends_sorted.csv', sep = ',')
+	global recommended
+	recommended = readVar('var', 'recommended', True)
+	if not recommended:
+		df = pd.read_csv('data/knn_recommended_sorted.csv', sep = ',')
 		df = df.to_numpy().astype(int)
 		for i in range(0, len(df)):
-			recommends[df[i][0]] = df[i][1:]
-		writeVar(recommends, 'var', 'recommends')
+			recommended[df[i][0]] = df[i][1:]
+		writeVar(recommended, 'var', 'recommended')
 	else:
-		print('  recommends:', len(recommends))
+		print('  recommended:', len(recommended))
 
 # 類型翻譯
 def Translater(buffer, ch):
@@ -422,7 +422,7 @@ class Request_Handle:
 		print("######### Same_Category3 ########")
 		if type == 1: # 同類推薦
 			movieidx, genres_english = int(text[-1]), text[:-1]
-			cpbuf = set(recommends[movieidx]) if movieidx in recommends.keys() else set() # 優先從KNN推薦結果中篩選具有相同類型者
+			cpbuf = set(recommended[movieidx]) if movieidx in recommended.keys() else set() # 優先從KNN推薦結果中篩選具有相同類型者
 			genres_indices = Translater(genres_english, 0)
 			self.genres_buff = {}
 			for l in range(0, len(genres_english)):
@@ -460,17 +460,17 @@ class Request_Handle:
 			picked = set()
 			for movieId in self.searched:
 				movieidx = nameTable[movieId][0]
-				if movieidx in recommends.keys():
-					for i in recommends[movieidx]:
+				if movieidx in recommended.keys():
+					for i in recommended[movieidx]:
 						picked.add(i)
 			if picked:
 				picked = list(picked)
 				buf = [picked[i] for i in random.sample(range(len(picked)), min(len(picked), carousel_size))]
 			else:
-				keys = list(recommends.keys())
+				keys = list(recommended.keys())
 				movieidx = random.sample(range(len(keys)), 1)[0] # 隨機一部電影
 				movieidx = keys[movieidx]
-				buf = recommends[movieidx][:carousel_size] # 直接採用KNN推薦結果
+				buf = recommended[movieidx][:carousel_size] # 直接採用KNN推薦結果
 			random.shuffle(buf)
 			while len(buf) < carousel_size:
 				movieidx = random.sample(range(0, len(movieTable)), 1)

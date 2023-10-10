@@ -62,7 +62,7 @@ def writeVar(obj, drt, fname):
 	except:
 		print('File exist, but open error.')
 
-def readVar(drt, fname, return_dict=False):
+def readVar(drt, fname, return_dict = False):
 	obj = {} if return_dict else []
 	if os.path.exists(drt+'/'+fname+'.pkl'):
 		try:
@@ -139,9 +139,9 @@ class Request_Handle:
 			print('  user:', status_dict['uid'])
 			self.load_status(status_dict)
 		message = self.Message_text(event) if not isPostback else self.Message_Postback(event)
-		line_bot_api.reply_message(event.reply_token, message)
 		status_dict = self.save_status()
 		writeVar(status_dict, 'user', uid)
+		line_bot_api.reply_message(event.reply_token, message)
 
 	def new_user(self, uid):
 		self.uid, self.status, self.GP_end = uid, 0, 0
@@ -464,6 +464,7 @@ class Request_Handle:
 	# 直接推薦
 	def Recommend2(self, get_more = False):
 		print("######### Recommend2 ########")
+        print(self.ai_buff)
 		if get_more and not self.ai_buff:
 			return TextSendMessage(text = '沒有更多電影')
 		elif not get_more:

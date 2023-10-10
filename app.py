@@ -468,6 +468,8 @@ class Request_Handle:
 			return TextSendMessage(text = '沒有更多電影')
 		elif not get_more:
 			picked = set()
+			if len(self.searched) < 3:
+				self.Read_Personal_Record(get_last = True)
 			for movieId in self.searched:
 				movieidx = nameTable[movieId][0]
 				if movieidx in recommended.keys():
@@ -497,14 +499,18 @@ class Request_Handle:
 		userRatings.Record_adder(self.uid, movieId, num)
 
 	# 讀取紀錄檔
-	def Read_Personal_Record(self):
+	def Read_Personal_Record(self, get_last = False):
 		print("######### Read_Personal_Record ########")
 		records = userRatings.Record_reader(self.uid)
 		if not records:
 			return TextSendMessage(text = '您尚未完成電影評分')
+		elif get_last:
+			n = len(records)
+			for i in range(n-3+len(self.searched), n):
+				self.searched.append(records[i].movie)
 		else:
-			catched = min(10, len(records))
 			records.reverse()
+			catched = min(10, len(records))
 			date = str(records[0].timestamp).split(' ')[0]
 			date = date.replace('-', '/')
 			movieTitle = nameTable[records[0].movie][1]

@@ -7,7 +7,6 @@ from linebot.models import (
 	CarouselColumn, CarouselTemplate, ButtonsTemplate, ConfirmTemplate
 )
 from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake, RadarEcho_url
-from movie_class import Movie2
 from dbpsql import userRatings
 import os
 import random
@@ -43,9 +42,20 @@ missing_picture = 'https://media.istockphoto.com/id/1311367104/vector/404-page-n
 #default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imdb_logo.png'
 carousel_size = 20 # 旋轉模板長度上限
 
+class Movie2:
+	def __init__(self, id = None, name = None, title = None, t = None):
+		self.id = id
+		self.letters = name
+		self.title = title
+		self.year = t
+		self.genres = []
+		self.grade = None
+		self.imdbId = None
+		self.picture= None
+
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):
-		os.mkdir(drt)
+		os.makedirs(drt)
 	try:
 		with open(drt+'/'+fname+'.pkl', 'wb') as file:
 			pickle.dump(obj, file)
@@ -74,7 +84,7 @@ def Read_All_Data2():
 	print('  movieTable:', len(movieTable))
 	if movieTable and genresTable and nameTable:
 		return
-	df = pd.read_csv('data/movies_final.csv', sep = ',')
+	df = pd.read_csv('data/movies_sorted.csv', sep = ',')
 	#movieTable, nameTable = [], {}
 	genresTable = [[] for _ in range(0, len(genres_dict))]
 	for i in range(0, len(df)):

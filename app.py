@@ -51,19 +51,18 @@ class Movie2:
 		self.genres = []
 		self.grade = None
 		self.imdbId = None
-		self.picture= None
+		self.picture = None
 
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):
-		os.makedirs(drt)
+		os.mkdir(drt)
 	try:
 		with open(drt+'/'+fname+'.pkl', 'wb') as file:
 			pickle.dump(obj, file)
 	except:
 		print('File exist, but open error.')
-		app.logger.info('File exist, but open error.')
 
-def readVar(drt, fname, return_dict = False):
+def readVar(drt, fname, return_dict=False):
 	obj = {} if return_dict else []
 	if os.path.exists(drt+'/'+fname+'.pkl'):
 		try:
@@ -140,9 +139,9 @@ class Request_Handle:
 			print('  user:', status_dict['uid'])
 			self.load_status(status_dict)
 		message = self.Message_text(event) if not isPostback else self.Message_Postback(event)
+		line_bot_api.reply_message(event.reply_token, message)
 		status_dict = self.save_status()
 		writeVar(status_dict, 'user', uid)
-		line_bot_api.reply_message(event.reply_token, message)
 
 	def new_user(self, uid):
 		self.uid, self.status, self.GP_end = uid, 0, 0
@@ -430,7 +429,6 @@ class Request_Handle:
 	# 相關性同類推薦
 	def Same_Category3(self, text, type):
 		print("######### Same_Category3 ########")
-		print("######### Same_Category3 ########")
 		if type == 1: # 同類推薦
 			movieidx, genres_english = int(text[-1]), text[:-1]
 			cpbuf = set(recommended[movieidx]) if movieidx in recommended.keys() else set() # 優先從KNN推薦結果中篩選具有相同類型者
@@ -465,13 +463,10 @@ class Request_Handle:
 	# 直接推薦
 	def Recommend2(self, get_more = False):
 		print("######### Recommend2 ########")
-		app.logger.info(self.ai_buff)
 		if get_more and not self.ai_buff:
 			return TextSendMessage(text = '沒有更多電影')
 		elif not get_more:
 			picked = set()
-			if len(self.searched) < 3:
-				self.Read_Personal_Record(get_last = True)
 			for movieId in self.searched:
 				movieidx = nameTable[movieId][0]
 				if movieidx in recommended.keys():
@@ -501,18 +496,14 @@ class Request_Handle:
 		userRatings.Record_adder(self.uid, movieId, num)
 
 	# 讀取紀錄檔
-	def Read_Personal_Record(self, get_last = False):
+	def Read_Personal_Record(self):
 		print("######### Read_Personal_Record ########")
 		records = userRatings.Record_reader(self.uid)
 		if not records:
 			return TextSendMessage(text = '您尚未完成電影評分')
-		elif get_last:
-			n = len(records)
-			for i in range(n-3+len(self.searched), n):
-				self.searched.append(records[i].movie)
 		else:
-			records.reverse()
 			catched = min(10, len(records))
+			records.reverse()
 			date = str(records[0].timestamp).split(' ')[0]
 			date = date.replace('-', '/')
 			movieTitle = nameTable[records[0].movie][1]

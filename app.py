@@ -61,6 +61,7 @@ def writeVar(obj, drt, fname):
 			pickle.dump(obj, file)
 	except:
 		print('File exist, but open error.')
+		app.logger.info('File exist, but open error.')
 
 def readVar(drt, fname, return_dict = False):
 	obj = {} if return_dict else []
@@ -464,7 +465,7 @@ class Request_Handle:
 	# 直接推薦
 	def Recommend2(self, get_more = False):
 		print("######### Recommend2 ########")
-		print(self.ai_buff)
+		app.logger.info(self.ai_buff)
 		if get_more and not self.ai_buff:
 			return TextSendMessage(text = '沒有更多電影')
 		elif not get_more:

@@ -294,7 +294,7 @@ class Request_Handle:
 				text = '請選擇欲執行的功能',
 				actions = [
 					PostbackTemplateAction(
-						label = '顯示更多'+str(len(self.keyword_buff)),
+						label = '顯示更多',
 						data = 'action=2-2'
 					),
 					PostbackTemplateAction(
@@ -314,11 +314,11 @@ class Request_Handle:
 				text = '請選擇欲執行的功能',
 				actions = [
 					PostbackTemplateAction(
-						label = '顯示更多'+str(len(self.genres_buff[next(iter(self.genres_buff))])),
+						label = '顯示更多',
 						data = 'action=3-2'
 					),
 					PostbackTemplateAction(
-						label = '下個類型'+str(len(self.genres_buff)),
+						label = '下個類型',
 						data = 'action=3-3'
 					),
 					PostbackTemplateAction(
@@ -334,7 +334,7 @@ class Request_Handle:
 				text = '請選擇欲執行的功能',
 				actions = [
 					PostbackTemplateAction(
-						label = '顯示更多'+str(len(self.ai_buff)),
+						label = '顯示更多',
 						data = 'action=6-2'
 					),
 					PostbackTemplateAction(

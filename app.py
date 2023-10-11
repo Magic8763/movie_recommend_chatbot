@@ -8,6 +8,7 @@ from linebot.models import (
 )
 from weather import Get_Weather, Get_Forecast, Get_AQI, Get_Earthquake, RadarEcho_url
 from dbpsql import userRatings
+from movie_class import Movie2
 import os
 import random
 import datetime
@@ -42,27 +43,16 @@ missing_picture = 'https://media.istockphoto.com/id/1311367104/vector/404-page-n
 #default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imdb_logo.png'
 carousel_size = 20 # 旋轉模板長度上限
 
-class Movie2:
-	def __init__(self, id = None, name = None, title = None, t = None):
-		self.id = id
-		self.letters = name
-		self.title = title
-		self.year = t
-		self.genres = []
-		self.grade = None
-		self.imdbId = None
-		self.picture = None
-
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):
-		os.mkdir(drt)
+		os.makedirs(drt)
 	try:
 		with open(drt+'/'+fname+'.pkl', 'wb') as file:
 			pickle.dump(obj, file)
 	except:
 		print('File exist, but open error.')
 
-def readVar(drt, fname, return_dict=False):
+def readVar(drt, fname, return_dict = False):
 	obj = {} if return_dict else []
 	if os.path.exists(drt+'/'+fname+'.pkl'):
 		try:
@@ -130,7 +120,7 @@ def Translater(buffer, ch):
 	return [genres_dict[tp][ch] for tp in buffer]
 
 class Request_Handle:
-	def __init__(self, event, isPostback=False):
+	def __init__(self, event, isPostback = False):
 		uid = str(event.source.user_id)
 		status_dict = readVar('user', uid, True)
 		if not status_dict:
@@ -139,9 +129,9 @@ class Request_Handle:
 			print('  user:', status_dict['uid'])
 			self.load_status(status_dict)
 		message = self.Message_text(event) if not isPostback else self.Message_Postback(event)
-		line_bot_api.reply_message(event.reply_token, message)
-		status_dict = self.save_status()
+		status_dict = self.get_status()
 		writeVar(status_dict, 'user', uid)
+		line_bot_api.reply_message(event.reply_token, message)
 
 	def new_user(self, uid):
 		self.uid, self.status, self.GP_end = uid, 0, 0
@@ -155,7 +145,7 @@ class Request_Handle:
 		self.keyword_buff, self.ai_buff = status_dict['keyword_buff'], status_dict['ai_buff']
 		self.scoring, self.searched = status_dict['scoring'], status_dict['searched']
 
-	def save_status(self):
+	def get_status(self):
 		return {'uid': self.uid, 'status': self.status, 'GP_end': self.GP_end,
 				'genres_buff': self.genres_buff,
 				'keyword_buff': self.keyword_buff, 'ai_buff': self.ai_buff,
@@ -304,7 +294,7 @@ class Request_Handle:
 				text = '請選擇欲執行的功能',
 				actions = [
 					PostbackTemplateAction(
-						label = '顯示更多',
+						label = '顯示更多'+str(len(self.keyword_buff)),
 						data = 'action=2-2'
 					),
 					PostbackTemplateAction(
@@ -324,11 +314,11 @@ class Request_Handle:
 				text = '請選擇欲執行的功能',
 				actions = [
 					PostbackTemplateAction(
-						label = '顯示更多',
+						label = '顯示更多'+str(len(self.genres_buff[next(iter(self.genres_buff))])),
 						data = 'action=3-2'
 					),
 					PostbackTemplateAction(
-						label = '下個類型',
+						label = '下個類型'+str(len(self.genres_buff)),
 						data = 'action=3-3'
 					),
 					PostbackTemplateAction(
@@ -344,7 +334,7 @@ class Request_Handle:
 				text = '請選擇欲執行的功能',
 				actions = [
 					PostbackTemplateAction(
-						label = '顯示更多',
+						label = '顯示更多'+str(len(self.ai_buff)),
 						data = 'action=6-2'
 					),
 					PostbackTemplateAction(
@@ -420,13 +410,13 @@ class Request_Handle:
 		GP_start = self.GP_end-5
 		sub_buffer = movieTable[GP_start:self.GP_end] if self.GP_end < 0 else movieTable[GP_start:]
 		if sub_buffer:
-			msg = self.Carousel_template2(sub_buffer, None, 1)
 			self.GP_end = GP_start
+			msg = self.Carousel_template2(sub_buffer, None, 1)
 		else:
 			msg = TextSendMessage(text = '沒有任何電影') if type == 1 else  TextSendMessage(text = '沒有更多電影')
 		return msg
 
-	# 相關性同類推薦
+	# 同類推薦
 	def Same_Category3(self, text, type):
 		print("######### Same_Category3 ########")
 		if type == 1: # 同類推薦
@@ -455,8 +445,9 @@ class Request_Handle:
 			key = next(iter(self.genres_buff))
 			if self.genres_buff[key]:
 				genres_zhtw = genres_dict[key][1]
-				msg = self.Carousel_template2(self.genres_buff[key][:5], genres_zhtw, 3)
+				sub_buffer = self.genres_buff[key][:5]
 				self.genres_buff[key] = self.genres_buff[key][5:]
+				msg = self.Carousel_template2(sub_buffer, genres_zhtw, 3)
 				return msg
 		return TextSendMessage(text = '沒有更多電影') if type == 1 else TextSendMessage(text = '沒有同類電影')
 
@@ -467,6 +458,8 @@ class Request_Handle:
 			return TextSendMessage(text = '沒有更多電影')
 		elif not get_more:
 			picked = set()
+			if len(self.searched) < 3:
+				self.Read_Personal_Record(get_last = True)
 			for movieId in self.searched:
 				movieidx = nameTable[movieId][0]
 				if movieidx in recommended.keys():
@@ -496,14 +489,18 @@ class Request_Handle:
 		userRatings.Record_adder(self.uid, movieId, num)
 
 	# 讀取紀錄檔
-	def Read_Personal_Record(self):
+	def Read_Personal_Record(self, get_last = False):
 		print("######### Read_Personal_Record ########")
 		records = userRatings.Record_reader(self.uid)
 		if not records:
 			return TextSendMessage(text = '您尚未完成電影評分')
+		elif get_last:
+			n = len(records)
+			for i in range(n-3+len(self.searched), n):
+				self.searched.append(records[i].movie)
 		else:
-			catched = min(10, len(records))
 			records.reverse()
+			catched = min(10, len(records))
 			date = str(records[0].timestamp).split(' ')[0]
 			date = date.replace('-', '/')
 			movieTitle = nameTable[records[0].movie][1]
@@ -552,8 +549,8 @@ class Request_Handle:
 				sub_buffer = self.keyword_buff[:5]
 				if len(sub_buffer) == 1: # 查詢只找到一部電影時將加入追蹤清單
 					self.Update_Searched(sub_buffer[0].id)
-				msg = self.Carousel_template2(sub_buffer, input_text, 2)
 				self.keyword_buff = self.keyword_buff[5:]
+				msg = self.Carousel_template2(sub_buffer, input_text, 2)
 			else: # 沒有找到電影
 				msg = TemplateSendMessage(
 					alt_text = 'ConfirmTemplate',
@@ -574,8 +571,8 @@ class Request_Handle:
 		elif type == 2:
 			if self.keyword_buff:
 				sub_buffer = self.keyword_buff[:5]
-				msg = self.Carousel_template2(sub_buffer, None, 2)
 				self.keyword_buff = self.keyword_buff[5:]
+				msg = self.Carousel_template2(sub_buffer, None, 2)
 			else:
 				msg = TextSendMessage(text = '沒有更多電影')
 		return msg

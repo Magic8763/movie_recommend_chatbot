@@ -1,10 +1,10 @@
-# LINE Chatbot with Movie Recommendation and ChatGPT API
-LINE chatbot running on Render
+# LINE Chatbot with Movie Recommendation and ChatGPT
+LINE chatbot running on Render.
 
 ## Prerequisites
 - Python3, Pandas, Requests, Flask, Flask-SQLAlchemy, Psycopg2, LINE Messaging API SDK, OpenAI API
 - [LINE Developers](https://developers.line.biz/en/) (Messaging API)
-- [OpenAI](https://platform.openai.com/) (ChatGPT)
+- [OpenAI](https://platform.openai.com/) (ChatGPT API)
 - [Render](https://render.com/) (Web Service, PostgreSQL)
 
 ## Description

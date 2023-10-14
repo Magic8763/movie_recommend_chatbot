@@ -1,5 +1,7 @@
-# LINE Chatbot with Movie Recommendation and ChatGPT
-本專案為具有電影推薦和 ChatGPT 功能的 LINE 聊天機器人，我們以 Python 開發聊天機器人的基本架構，設計具有查詢與推薦功能的電影資料庫介面，並導入 ChatGPT API 來回應用戶的文字訊息。
+# Movie Recommendation Chatbot
+![](https://img.shields.io/github/stars/Magic8763/TPMP.svg) ![](https://img.shields.io/github/watchers/Magic8763/TPMP.svg) ![](https://img.shields.io/github/forks/Magic8763/TPMP.svg) ![shields](https://img.shields.io/badge/python-3.11%2B-blue.svg?style=flat-square) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
+本專案為具有電影推薦和 ChatGPT 功能的 LINE 聊天機器人，具有可供查詢與推薦電影的操作介面，並導入 ChatGPT API 來回應用戶的文字訊息。
 
 藉由用戶與聊天機器人的互動，系統會逐漸更新電影推薦清單，得出符合用戶近期偏好的專屬內容。
 
@@ -7,10 +9,13 @@
 
 對使用者而言，所有操作僅在 LINE App 上進行，不必安裝其他應用，不用進行軟體更新，也不會佔用任何儲存空間，具有高度輕便性。 
 
+## Demo
+
 ## Prerequisites
 - Python3, Pandas, Requests, Flask, Flask-SQLAlchemy, Psycopg2, LINE Messaging API SDK, OpenAI API
-- [LINE Developers](https://developers.line.biz/en/) (Messaging API)
-- [OpenAI](https://platform.openai.com/) (ChatGPT API)
+- [LINE Official Account](https://manager.line.biz/) (建立機器人帳戶)
+- [LINE Developers](https://developers.line.biz/en/) (串接 Messaging API)
+- [OpenAI](https://platform.openai.com/) (串接付費 ChatGPT API)
 - [Render](https://render.com/) (Web Service, PostgreSQL)
 
 ## Description
@@ -23,9 +28,11 @@
   - movies_sorted.csv: 電影特徵資料集，根據上映年份遞增排序的 62423 部電影與其特徵
   - knn_recommended_sorted.csv: 由 KNN 模型計算所得的電影推薦矩陣，包含與 7459 部相異電影各自高度相似的 50 部其他電影
 
-## Screenshot
-
+## Tutorial
 
 
 ## Authors
-* **Chih-Chien Cheng** - (categoryv@cycu.org.tw)
+* **[Magic8763](https://github.com/Magic8763)**
+
+## License
+This project is licensed under the [MIT License](https://github.com/Magic8763/linebot_on_Render/blob/main/LICENSE)

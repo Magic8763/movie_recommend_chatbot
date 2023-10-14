@@ -1,5 +1,5 @@
 # Movie Recommendation Chatbot
-![](https://img.shields.io/github/stars/Magic8763/TPMP.svg) ![](https://img.shields.io/github/watchers/Magic8763/TPMP.svg) ![](https://img.shields.io/github/forks/Magic8763/TPMP.svg) ![shields](https://img.shields.io/badge/python-3.11%2B-blue.svg?style=flat-square) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+![](https://img.shields.io/github/stars/Magic8763/linebot_on_Render) ![](https://img.shields.io/github/watchers/Magic8763/linebot_on_Render.svg) ![](https://img.shields.io/github/forks/Magic8763/linebot_on_Render.svg) ![shields](https://img.shields.io/badge/python-3.11%2B-blue.svg?style=flat-square) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 本專案為具有電影推薦和 ChatGPT 功能的 LINE 聊天機器人，具有可供查詢與推薦電影的操作介面，並導入 ChatGPT API 來回應用戶的文字訊息。
 

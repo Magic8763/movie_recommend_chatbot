@@ -13,7 +13,6 @@ import os
 import random
 import datetime
 import pandas as pd
-import numpy as np
 import openai # pip install openai
 import pickle
 import threading
@@ -36,11 +35,8 @@ genres_dict = {'Documentary': (0, '紀錄'), 'Comedy': (1, '喜劇'), 'Crime': (
 			'Biography': (22, '傳記'), 'Music': (23, '音樂'), 'Family': (24, '家庭'),
 			'News': (25, '新聞'), 'Adult': (26, '成人'), 'Reality-TV': (27, '實境秀'),
 			'Talk-Show': (28, '脫口秀')}
-#honmpage_picture = 'https://attach.setn.com/newsimages/2017/02/10/805406-XXL.jpg'
 honmpage_picture = 'https://media.istockphoto.com/id/1175497926/photo/interior-of-empty-movie-theater-with-red-seats.jpg?s=612x612&w=0&k=20&c=jqQUcMrgwBqE0xbHwkd_eA-JDGQjUwFwnUnF3x0lKto='
-#missing_picture = 'https://cdn0.techbang.com/system/excerpt_images/55555/original/d5045073e258563e2b62eed24605cd60.png?1512550227'
 missing_picture = 'https://media.istockphoto.com/id/1311367104/vector/404-page-not-found-banner-template.jpg?s=612x612&w=0&k=20&c=2o5WdgneLw6S2Bc5NalxJByoKMRnkd1w5O-7UnL5wBs='
-#default_picture = 'https://m.media-amazon.com/images/G/01/imdb/images/social/imdb_logo.png'
 carousel_size = 20 # 旋轉模板長度上限
 
 def writeVar(obj, drt, fname):
@@ -138,18 +134,24 @@ class Request_Handle:
 		self.genres_buff = {} # genres_buff = {類別: 推薦清單}
 		self.keyword_buff, self.ai_buff = [], []
 		self.scoring, self.searched = [], [] # searched: 追蹤最近查詢/評分/點擊的3部電影idx
+		self.reset_gpt_log() 
 
 	def load_status(self, status_dict):
 		self.uid, self.status, self.GP_end = status_dict['uid'], status_dict['status'], status_dict['GP_end']
 		self.genres_buff = status_dict['genres_buff']
 		self.keyword_buff, self.ai_buff = status_dict['keyword_buff'], status_dict['ai_buff']
 		self.scoring, self.searched = status_dict['scoring'], status_dict['searched']
+		self.gpt_log = status_dict['gpt_log']
 
 	def get_status(self):
 		return {'uid': self.uid, 'status': self.status, 'GP_end': self.GP_end,
 				'genres_buff': self.genres_buff,
 				'keyword_buff': self.keyword_buff, 'ai_buff': self.ai_buff,
-				'scoring': self.scoring, 'searched': self.searched}
+				'scoring': self.scoring, 'searched': self.searched,
+				'gpt_log': self.gpt_log}
+
+	def reset_gpt_log(self):
+		self.gpt_log = [{'role': 'system', 'content': 'You are a helpful assistant.'}]
 
 	def Message_text(self, event):
 		if self.status in (2, 5):
@@ -192,7 +194,8 @@ class Request_Handle:
 				message = [TextSendMessage(text = msg), ImageSendMessage(original_content_url = img, preview_image_url = img)]
 			else:
 				print('  >>> ChatGPT <<<')
-				message = self.Call_ChatGPT(text)
+				return self.Call_ChatGPT(text)
+		self.reset_gpt_log()
 		return message
 
 	def Message_Postback(self, event):
@@ -231,6 +234,7 @@ class Request_Handle:
 			message = self.Recommend2(True)
 		else:
 			message = self.Menu(None, 0)
+		self.reset_gpt_log()
 		return message
 
 	# 主選單
@@ -547,9 +551,9 @@ class Request_Handle:
 			self.keyword_buff = [movieTable[i] for _, i in matched[:20]]
 			if self.keyword_buff:
 				sub_buffer = self.keyword_buff[:5]
+				self.keyword_buff = self.keyword_buff[5:]
 				if len(sub_buffer) == 1: # 查詢只找到一部電影時將加入追蹤清單
 					self.Update_Searched(sub_buffer[0].id)
-				self.keyword_buff = self.keyword_buff[5:]
 				msg = self.Carousel_template2(sub_buffer, input_text, 2)
 			else: # 沒有找到電影
 				msg = TemplateSendMessage(
@@ -582,14 +586,18 @@ class Request_Handle:
 		return ImageSendMessage(original_content_url = RadarEcho_url, preview_image_url = RadarEcho_url)
 
 	# 以ChatGPT回覆訊息
-	def Call_ChatGPT(self, text):
-		response = openai.Completion.create(
-			model = 'text-davinci-003',
-			prompt = text,
+	def Call_ChatGPT(self, input_text):
+		self.gpt_log.append({'role': 'user', 'content': input_text})
+		#print(self.gpt_log)
+		response = openai.ChatCompletion.create(
+			model = 'gpt-3.5-turbo',
+			messages = self.gpt_log,
 			max_tokens = 512, # max_tokens 最大為2048
-			temperature = 0.5
+			temperature = 1
 		)
-		msg = 'ChatGPT: '+response['choices'][0]['text'].replace('\n', '', 2)
+		msg = response.choices[0].message.content
+		self.gpt_log.pop()
+		self.gpt_log.append({'role': 'assistant', 'content': msg})
 		return TextSendMessage(text = msg)
 
 # 監聽所有來自'.../'的 Post Request

@@ -8,9 +8,13 @@
 對使用者而言，所有操作僅在 LINE App 上進行，不必安裝其他應用，不用進行軟體更新，也不會佔用任何儲存空間，具有高度輕便性。 
 
 ## Demo
-<img height="100" border="0" alt="QRcode" src="https://qr-official.line.me/gs/M_syw6100p_GW.png">
+掃描以下 QR code 將聊天機器人加為好友
+
+<img height="100" border="0" alt="QRcode" src="https://raw.githubusercontent.com/Magic8763/linebot_on_Render/main/img/qrcode.png?token=GHSAT0AAAAAACIASZ5XDYNFTWNEWOVLVV6EZJKSR4Q">
 
 <a href="https://line.me/R/ti/p/@syw6100p"><img height="30" border="0" alt="加入好友" src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png"></a>
+
+
 
 ## Prerequisites
 - Python3, Pandas, Requests, Flask, Flask-SQLAlchemy, Psycopg2, LINE Messaging API SDK, OpenAI API
@@ -28,9 +32,6 @@
 - [KNN Movie Recommendation](https://github.com/Magic8763/knn_recommendation) 的 `movies_sorted.csv` 和 `knn_recommended_sorted.csv`
   - `movies_sorted.csv`: 電影特徵資料集，根據上映年份遞增排序的 62423 部電影與其特徵
   - `knn_recommended_sorted.csv`: 由 KNN 模型計算所得的電影推薦矩陣，包含與 7459 部相異電影各自高度相似的 50 部其他電影
-
-## Tutorial
-
 
 ## Authors
 * **[Magic8763](https://github.com/Magic8763)**

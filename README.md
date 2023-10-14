@@ -5,11 +5,12 @@
 
 藉由用戶與聊天機器人的互動，系統會逐漸更新電影推薦清單，得出符合用戶近期偏好的專屬內容。
 
-採用 Python threading 模組，實現能同時處理複數請求而不衝突的穩定性。
-
 對使用者而言，所有操作僅在 LINE App 上進行，不必安裝其他應用，不用進行軟體更新，也不會佔用任何儲存空間，具有高度輕便性。 
 
 ## Demo
+<img height="100" border="0" alt="QRcode" src="https://qr-official.line.me/gs/M_syw6100p_GW.png">
+
+<a href="https://line.me/R/ti/p/@syw6100p"><img height="30" border="0" alt="加入好友" src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png"></a>
 
 ## Prerequisites
 - Python3, Pandas, Requests, Flask, Flask-SQLAlchemy, Psycopg2, LINE Messaging API SDK, OpenAI API

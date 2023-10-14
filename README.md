@@ -8,11 +8,6 @@
 對使用者而言，所有操作僅在 LINE App 上進行，不必安裝其他應用，不用進行軟體更新，也不會佔用任何儲存空間，具有高度輕便性。 
 
 ## Demo
-掃描以下 QR code 將聊天機器人加為好友
-
-<img height="100" border="0" alt="QRcode" src="https://raw.githubusercontent.com/Magic8763/linebot_on_Render/main/img/qrcode.png?token=GHSAT0AAAAAACIASZ5XDYNFTWNEWOVLVV6EZJKSR4Q">
-
-<a href="https://line.me/R/ti/p/@syw6100p"><img height="30" border="0" alt="加入好友" src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png"></a>
 
 
 

@@ -19,14 +19,14 @@
 - [Render](https://render.com/) (Web Service, PostgreSQL)
 
 ## Description
-- app.py: 程式主體，針對 LINE 用戶的請求做出對應的回覆
-- dbpsql.py: PostgreSQL 資料庫的資料新增與讀取功能
-- weather.py: 取得天氣狀況與空氣品質資訊的相關功能，參考自 [STEAM 教育學習網](https://steam.oxxostudio.tw/category/python/example/line-bot-weather-3.html)
+- `app.py`: 程式主體，針對 LINE 用戶的請求做出對應的回覆
+- `dbpsql.py`: PostgreSQL 資料庫的資料新增與讀取功能
+- `weather.py`: 取得天氣狀況與空氣品質資訊的相關功能，參考自 [STEAM 教育學習網](https://steam.oxxostudio.tw/category/python/example/line-bot-weather-3.html)
 
 ## Dataset
-- [KNN Movie Recommendation](https://github.com/Magic8763/knn_recommendation) 的 movies_sorted.csv 和 knn_recommended_sorted.csv
-  - movies_sorted.csv: 電影特徵資料集，根據上映年份遞增排序的 62423 部電影與其特徵
-  - knn_recommended_sorted.csv: 由 KNN 模型計算所得的電影推薦矩陣，包含與 7459 部相異電影各自高度相似的 50 部其他電影
+- [KNN Movie Recommendation](https://github.com/Magic8763/knn_recommendation) 的 `movies_sorted.csv` 和 `knn_recommended_sorted.csv`
+  - `movies_sorted.csv`: 電影特徵資料集，根據上映年份遞增排序的 62423 部電影與其特徵
+  - `knn_recommended_sorted.csv`: 由 KNN 模型計算所得的電影推薦矩陣，包含與 7459 部相異電影各自高度相似的 50 部其他電影
 
 ## Tutorial
 

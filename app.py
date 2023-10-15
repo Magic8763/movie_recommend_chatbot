@@ -37,7 +37,8 @@ genres_dict = {'Documentary': (0, '紀錄'), 'Comedy': (1, '喜劇'), 'Crime': (
 			'Talk-Show': (28, '脫口秀')}
 honmpage_picture = 'https://media.istockphoto.com/id/1175497926/photo/interior-of-empty-movie-theater-with-red-seats.jpg?s=612x612&w=0&k=20&c=jqQUcMrgwBqE0xbHwkd_eA-JDGQjUwFwnUnF3x0lKto='
 missing_picture = 'https://media.istockphoto.com/id/1311367104/vector/404-page-not-found-banner-template.jpg?s=612x612&w=0&k=20&c=2o5WdgneLw6S2Bc5NalxJByoKMRnkd1w5O-7UnL5wBs='
-carousel_size = 20 # 旋轉模板長度上限
+carousel_size = 4# 旋轉模板長度
+output_size = 20 # 單次可輸出電影總數
 
 def writeVar(obj, drt, fname):
 	if not os.path.exists(drt):

@@ -71,7 +71,6 @@ def Read_All_Data2():
 	if movieTable and genresTable and nameTable:
 		return
 	df = pd.read_csv('data/movies_sorted.csv', sep = ',')
-	#movieTable, nameTable = [], {}
 	genresTable = [[] for _ in range(0, len(genres_dict))]
 	for i in range(0, len(df)):
 		movieId, movieName, movieTitle = str(df['movieId'].iloc[i]), str(df['letters'].iloc[i]), str(df['title'].iloc[i])
@@ -168,7 +167,7 @@ class Request_Handle:
 			message = TextSendMessage(text = msg)
 		else: # event.message.type == 'text'
 			text = event.message.text
-			if len(text) > 9 and text[:9] == "@電影推薦機器人：":
+			if text[:8] == '@電影推薦機器人':
 				print('  >>> 電影推薦機器人 <<<')
 				text = text[9:]
 				if text == "近期上映":
@@ -411,11 +410,11 @@ class Request_Handle:
 		print("######### Get_Playing2 ########")
 		if type == 1:
 			self.GP_end = 0
-		GP_start = self.GP_end-5
+		GP_start = self.GP_end-carousel_size
 		sub_buffer = movieTable[GP_start:self.GP_end] if self.GP_end < 0 else movieTable[GP_start:]
 		if sub_buffer:
 			self.GP_end = GP_start
-			msg = self.Carousel_template2(sub_buffer, None, 1)
+			msg = self.Carousel_template2(sub_buffer[::-1], None, 1)
 		else:
 			msg = TextSendMessage(text = '沒有任何電影') if type == 1 else  TextSendMessage(text = '沒有更多電影')
 		return msg
@@ -433,7 +432,7 @@ class Request_Handle:
 				for cp in cpbuf:
 					if genres_english[l] in movieTable[cp].genres:
 						tybuf.add(cp)
-				while len(tybuf) < carousel_size:
+				while len(tybuf) < output_size:
 					picked = random.sample(range(len(genresTable[genres_indices[l]])), 1)[0]
 					tybuf.add(genresTable[genres_indices[l]][picked])
 				scbuf = [movieTable[tp] for tp in tybuf]
@@ -449,8 +448,8 @@ class Request_Handle:
 			key = next(iter(self.genres_buff))
 			if self.genres_buff[key]:
 				genres_zhtw = genres_dict[key][1]
-				sub_buffer = self.genres_buff[key][:5]
-				self.genres_buff[key] = self.genres_buff[key][5:]
+				sub_buffer = self.genres_buff[key][:carousel_size]
+				self.genres_buff[key] = self.genres_buff[key][carousel_size:]
 				msg = self.Carousel_template2(sub_buffer, genres_zhtw, 3)
 				return msg
 		return TextSendMessage(text = '沒有更多電影') if type == 1 else TextSendMessage(text = '沒有同類電影')
@@ -471,20 +470,20 @@ class Request_Handle:
 						picked.add(i)
 			if picked:
 				picked = list(picked)
-				buf = [picked[i] for i in random.sample(range(len(picked)), min(len(picked), carousel_size))]
+				buf = [picked[i] for i in random.sample(range(len(picked)), min(len(picked), output_size))]
 			else:
 				keys = list(recommended.keys())
 				movieidx = random.sample(range(len(keys)), 1)[0] # 隨機一部電影
 				movieidx = keys[movieidx]
-				buf = recommended[movieidx][:carousel_size] # 直接採用KNN推薦結果
+				buf = recommended[movieidx][:output_size] # 直接採用KNN推薦結果
 			random.shuffle(buf)
-			while len(buf) < carousel_size:
+			while len(buf) < output_size:
 				movieidx = random.sample(range(0, len(movieTable)), 1)
 				if movieidx not in picked:
 					buf.append(movieidx)
 			self.ai_buff = [movieTable[i] for i in buf]
-		sub_buffer = self.ai_buff[:5]
-		self.ai_buff = self.ai_buff[5:]
+		sub_buffer = self.ai_buff[:carousel_size]
+		self.ai_buff = self.ai_buff[carousel_size:]
 		return self.Carousel_template2(sub_buffer, None, 4)
 
 	# 更新紀錄檔
@@ -536,7 +535,7 @@ class Request_Handle:
 				self.Update_Searched(movieId)
 			self.Save_Personal_Record(movieId, num)
 			print('****'+ self.uid+'****'+movieId+'****'+movieName+'****'+str(num)+'****')
-			msg = TextSendMessage(text = '已評分')		
+			msg = TextSendMessage(text = '"'+movieName+'" 已評分')		
 		except ValueError:
 			msg = TextSendMessage(text = '評分失敗')
 		return msg
@@ -550,8 +549,8 @@ class Request_Handle:
 			matched.sort(key = lambda x: (x[0], -x[1]))
 			self.keyword_buff = [movieTable[i] for _, i in matched[:20]]
 			if self.keyword_buff:
-				sub_buffer = self.keyword_buff[:5]
-				self.keyword_buff = self.keyword_buff[5:]
+				sub_buffer = self.keyword_buff[:carousel_size]
+				self.keyword_buff = self.keyword_buff[carousel_size:]
 				if len(sub_buffer) == 1: # 查詢只找到一部電影時將加入追蹤清單
 					self.Update_Searched(sub_buffer[0].id)
 				msg = self.Carousel_template2(sub_buffer, input_text, 2)
@@ -574,8 +573,8 @@ class Request_Handle:
 				)
 		elif type == 2:
 			if self.keyword_buff:
-				sub_buffer = self.keyword_buff[:5]
-				self.keyword_buff = self.keyword_buff[5:]
+				sub_buffer = self.keyword_buff[:carousel_size]
+				self.keyword_buff = self.keyword_buff[carousel_size:]
 				msg = self.Carousel_template2(sub_buffer, None, 2)
 			else:
 				msg = TextSendMessage(text = '沒有更多電影')

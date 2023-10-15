@@ -17,13 +17,13 @@
 <img src="https://raw.githubusercontent.com/Magic8763/linebot_on_Render/main/img/%E9%A6%96%E9%A0%81.jpg?token=GHSAT0AAAAAACIASZ5WCZCR5SI2PJK4FRN2ZJLWGAQ">
 
 >點擊首頁的"近期上映"按鈕或輸入"@電影推薦機器人：近期上映"，返回上映日期最近的幾部電影。
-<img src="https://raw.githubusercontent.com/Magic8763/linebot_on_Render/main/img/%E8%BF%91%E6%9C%9F%E4%B8%8A%E6%98%A0.jpg?token=GHSAT0AAAAAACIASZ5WVH7N45ZFIM4S66L2ZJLWBVQ">
+<img src="https://raw.githubusercontent.com/Magic8763/linebot_on_Render/main/img/%E8%BF%91%E6%9C%9F%E4%B8%8A%E6%98%A0.jpg?token=GHSAT0AAAAAACIASZ5XTBY5XTFWBBANIAE2ZJLWIEQ">
 
 >點擊首頁的"關鍵字搜尋"按鈕或輸入"@電影推薦機器人：關鍵字搜尋"，接著輸入關鍵字，返回片名與其相符的所有電影。
-<img src="https://raw.githubusercontent.com/Magic8763/linebot_on_Render/main/img/%E9%97%9C%E9%8D%B5%E5%AD%97%E6%90%9C%E5%B0%8B.jpg?token=GHSAT0AAAAAACIASZ5XNAPQWFYSVYO7GRZIZJLWCFQ">
+<img src="https://raw.githubusercontent.com/Magic8763/linebot_on_Render/main/img/%E9%97%9C%E9%8D%B5%E5%AD%97%E6%90%9C%E5%B0%8B.jpg?token=GHSAT0AAAAAACIASZ5XSKIHUB5KVX3NKCJSZJLWISA">
 
 >點擊首頁的"智慧推薦"按鈕或輸入"@電影推薦機器人：智慧推薦"，返回推薦給用戶的幾部電影。
-<img src="https://raw.githubusercontent.com/Magic8763/linebot_on_Render/main/img/%E6%99%BA%E6%85%A7%E6%8E%A8%E8%96%A6.jpg?token=GHSAT0AAAAAACIASZ5W37J3YZW6C7LCBVQQZJLWCQA">
+<img src="https://raw.githubusercontent.com/Magic8763/linebot_on_Render/main/img/%E6%99%BA%E6%85%A7%E6%8E%A8%E8%96%A6.jpg?token=GHSAT0AAAAAACIASZ5XUQ7RJTA5AF7HLGDUZJLWIZQ">
 
 >點擊首頁的"評分紀錄"按鈕或輸入"@電影推薦機器人：評分紀錄"，返回用戶最近 10 筆電影評分。
 <img src="https://raw.githubusercontent.com/Magic8763/linebot_on_Render/main/img/%E8%A9%95%E5%88%86%E6%9F%A5%E8%A9%A2.jpg?token=GHSAT0AAAAAACIASZ5XK76ILWM3M32WJFGYZJLWDDQ">

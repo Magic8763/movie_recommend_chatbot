@@ -5,9 +5,9 @@
 ![shields](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](https://opensource.org/licenses/MIT)
 
-本專案為具有電影推薦和 ChatGPT 功能的 LINE 聊天機器人，具有可供查詢與推薦電影的操作介面，並導入 ChatGPT 回應用戶的文字訊息。
+本專案為基於 Flask 框架所開發的 LINE 聊天機器人，具有可供查詢與推薦電影的操作介面，並導入 ChatGPT 回應用戶的文字訊息。
 
-藉由用戶與聊天機器人的互動，系統會逐漸更新電影推薦清單，得出符合用戶近期偏好的專屬內容。
+透過用戶與聊天機器人的互動，系統會逐漸更新電影推薦清單，得出符合用戶近期偏好的專屬內容。
 
 對使用者而言，所有操作僅在 LINE App 上進行，不必安裝其他應用，不用進行軟體更新，也不會佔用任何儲存空間，具有高度輕便性。 
 

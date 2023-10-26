@@ -60,7 +60,7 @@
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Weather.jpg)
 
 ## Prerequisites
-- Python3, Pandas, Requests, Flask, Flask-SQLAlchemy, Psycopg2, LINE Messaging API SDK, OpenAI API
+- Python3, Flask, Flask-SQLAlchemy, Psycopg2, Requests, Pandas, LINE Messaging API SDK, OpenAI API
 - [LINE Official Account](https://manager.line.biz/) (建立機器人帳戶)
 - [LINE Developers](https://developers.line.biz/en/) (串接 Messaging API)
 - [OpenAI](https://platform.openai.com/) (串接 ChatGPT API)

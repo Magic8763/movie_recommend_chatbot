@@ -60,8 +60,8 @@ def readVar(drt, fname, return_dict = False):
 	return obj
 
 # 讀資料檔
-def Read_All_Data2():
-	print("######### Read_All_Data2 ########")
+def Read_All_Data():
+	print("######### Read_All_Data ########")
 	global movieTable, genresTable, nameTable
 	genresTable = readVar('var', 'genresTable')
 	print('  genresTable:', len(genresTable))
@@ -161,7 +161,7 @@ class Request_Handle:
 			elif self.status == 5: # 給予評分
 				message = self.Score_message(event.message.text)
 			self.status = 0
-		elif event.message.type == 'location':
+		elif event.message.type == 'location': # 發送本地位置 "https://line.me/R/nv/location/" 訊息
 			print('  >>> 氣象預報機器人 <<<')
 			address = event.message.address
 			msg = address+'\n'+Get_Weather(address)+'\n'+Get_AQI(address)+'\n'+Get_Forecast(address)
@@ -171,20 +171,20 @@ class Request_Handle:
 			if text[:8] == '@電影推薦機器人':
 				print('  >>> 電影推薦機器人 <<<')
 				text = text[9:]
-				if text == "近期上映":
-					message = self.Get_Playing2(1)
+				if text == "最新電影":
+					message = self.Get_New(1)
 				elif text == "關鍵字搜尋":
 					self.status = 2
 					message = TextSendMessage(text = '請輸入欲查詢的電影名稱(英文)')
 				elif text == "智慧推薦":
-					message = self.Recommend2()
+					message = self.Get_Recommended()
 				elif text == "評分紀錄":
 					message = self.Read_Personal_Record()
 				else:
 					self.status = 0
 					message = self.Menu(None, 0)
-			elif text == "@雷達回波圖":
-				print('  >>> 雷達回波圖 <<<')
+			elif text == "@氣象雷達":
+				print('  >>> 氣象雷達 <<<')
 				message = self.Get_RadarEcho()
 			elif text == "@地震資訊":
 				print('  >>> 地震資訊 <<<')
@@ -203,9 +203,9 @@ class Request_Handle:
 			self.status = 0
 			message = self.Menu(None, 0)
 		elif event.postback.data == 'action=1-1':
-			message = self.Get_Playing2(1)
+			message = self.Get_New(1)
 		elif event.postback.data == 'action=1-2':
-			message = self.Get_Playing2(2)
+			message = self.Get_New(2)
 		elif event.postback.data == 'action=2-1':
 			self.status = 2
 			message = TextSendMessage(text = '請輸入欲查詢的電影名稱(英文)')
@@ -217,11 +217,11 @@ class Request_Handle:
 		elif event.postback.data[0:10] == 'action=3-1':
 			text = event.postback.data.split('\n')[1:]
 			self.Update_Searched(text[0])
-			message = self.Same_Category3(text[1:], 1)
+			message = self.Get_Similar(text[1:], 1)
 		elif event.postback.data == 'action=3-2':
-			message = self.Same_Category3(None, 2)
+			message = self.Get_Similar(None, 2)
 		elif event.postback.data == 'action=3-3':
-			message = self.Same_Category3(None, 3)
+			message = self.Get_Similar(None, 3)
 		elif event.postback.data == 'action=4-1':
 			message = self.Read_Personal_Record()
 		elif event.postback.data[0:10] == 'action=5-1':
@@ -229,9 +229,9 @@ class Request_Handle:
 			self.scoring = event.postback.data.split('\n')[1:]
 			message = TextSendMessage(text = '請輸入分數(1~10)')
 		elif event.postback.data == 'action=6-1':
-			message = self.Recommend2(False)
+			message = self.Get_Recommended(False)
 		elif event.postback.data == 'action=6-2':
-			message = self.Recommend2(True)
+			message = self.Get_Recommended(True)
 		else:
 			message = self.Menu(None, 0)
 		self.reset_gpt_log()
@@ -249,7 +249,7 @@ class Request_Handle:
 					text = '請選擇欲執行的功能',
 					actions = [
 						PostbackTemplateAction(
-							label = '近期上映',
+							label = '最新電影',
 							data = 'action=1-1'
 						),
 						PostbackTemplateAction(
@@ -270,7 +270,7 @@ class Request_Handle:
 		elif home == 1:
 			msg = CarouselColumn(
 				thumbnail_image_url = honmpage_picture,
-				title = '近期上映',
+				title = '最新電影',
 				text = '請選擇欲執行的功能',
 				actions = [
 					PostbackTemplateAction(
@@ -354,8 +354,8 @@ class Request_Handle:
 		return msg
 
 	# 製作訊息模板
-	def Carousel_template2(self, sub_buffer, text, home):
-		print("######### Carousel_template2 ########")
+	def Carousel_template(self, sub_buffer, text, home):
+		print("######### Carousel_template ########")
 		template_list = []
 		for i in range(0, len(sub_buffer)):
 			if len(sub_buffer[i].title) > 40:
@@ -406,23 +406,23 @@ class Request_Handle:
 		)
 		return msg
 
-	# 近期上映
-	def Get_Playing2(self, type):
-		print("######### Get_Playing2 ########")
+	# 最新電影
+	def Get_New(self, type):
+		print("######### Get_New ########")
 		if type == 1:
 			self.GP_end = 0
 		GP_start = self.GP_end-carousel_size
 		sub_buffer = movieTable[GP_start:self.GP_end] if self.GP_end < 0 else movieTable[GP_start:]
 		if sub_buffer:
 			self.GP_end = GP_start
-			msg = self.Carousel_template2(sub_buffer[::-1], None, 1)
+			msg = self.Carousel_template(sub_buffer[::-1], None, 1)
 		else:
 			msg = TextSendMessage(text = '沒有任何電影') if type == 1 else  TextSendMessage(text = '沒有更多電影')
 		return msg
 
 	# 同類推薦
-	def Same_Category3(self, text, type):
-		print("######### Same_Category3 ########")
+	def Get_Similar(self, text, type):
+		print("######### Get_Similar ########")
 		if type == 1: # 同類推薦
 			movieidx, genres_english = int(text[-1]), text[:-1]
 			cpbuf = set(recommended[movieidx]) if movieidx in recommended.keys() else set() # 優先從KNN推薦結果中篩選具有相同類型者
@@ -451,13 +451,13 @@ class Request_Handle:
 				genres_zhtw = genres_dict[key][1]
 				sub_buffer = self.genres_buff[key][:carousel_size]
 				self.genres_buff[key] = self.genres_buff[key][carousel_size:]
-				msg = self.Carousel_template2(sub_buffer, genres_zhtw, 3)
+				msg = self.Carousel_template(sub_buffer, genres_zhtw, 3)
 				return msg
 		return TextSendMessage(text = '沒有更多電影') if type == 1 else TextSendMessage(text = '沒有同類電影')
 
-	# 直接推薦
-	def Recommend2(self, get_more = False):
-		print("######### Recommend2 ########")
+	# 智慧推薦
+	def Get_Recommended(self, get_more = False):
+		print("######### Get_Recommended ########")
 		if get_more and not self.ai_buff:
 			return TextSendMessage(text = '沒有更多電影')
 		elif not get_more:
@@ -485,7 +485,7 @@ class Request_Handle:
 			self.ai_buff = [movieTable[i] for i in buf]
 		sub_buffer = self.ai_buff[:carousel_size]
 		self.ai_buff = self.ai_buff[carousel_size:]
-		return self.Carousel_template2(sub_buffer, None, 4)
+		return self.Carousel_template(sub_buffer, None, 4)
 
 	# 更新紀錄檔
 	def Save_Personal_Record(self, movieId, num):
@@ -554,7 +554,7 @@ class Request_Handle:
 				self.keyword_buff = self.keyword_buff[carousel_size:]
 				if len(sub_buffer) == 1: # 查詢只找到一部電影時將加入追蹤清單
 					self.Update_Searched(sub_buffer[0].id)
-				msg = self.Carousel_template2(sub_buffer, input_text, 2)
+				msg = self.Carousel_template(sub_buffer, input_text, 2)
 			else: # 沒有找到電影
 				msg = TemplateSendMessage(
 					alt_text = 'ConfirmTemplate',
@@ -576,12 +576,12 @@ class Request_Handle:
 			if self.keyword_buff:
 				sub_buffer = self.keyword_buff[:carousel_size]
 				self.keyword_buff = self.keyword_buff[carousel_size:]
-				msg = self.Carousel_template2(sub_buffer, None, 2)
+				msg = self.Carousel_template(sub_buffer, None, 2)
 			else:
 				msg = TextSendMessage(text = '沒有更多電影')
 		return msg
 
-	# 雷達回波圖
+	# 氣象雷達
 	def Get_RadarEcho(self):
 		return ImageSendMessage(original_content_url = RadarEcho_url, preview_image_url = RadarEcho_url)
 
@@ -590,7 +590,8 @@ class Request_Handle:
 		self.gpt_log.append({'role': 'user', 'content': input_text})
 		#print(self.gpt_log)
 		response = openai.ChatCompletion.create(
-			model = 'gpt-3.5-turbo',
+			#model = 'gpt-3.5-turbo',
+			model = 'gpt-4',
 			messages = self.gpt_log,
 			max_tokens = 512, # max_tokens 最大為2048
 			temperature = 1
@@ -642,14 +643,14 @@ def handle_message(event):
 """
 if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下列程式碼
 	print("\n######### main ########")
-	Read_All_Data2()
+	Read_All_Data()
 	KNN_Recommend()
 	port = int(os.environ.get('PORT', 5000))
 	#app.debug = True
 	app.run(host='0.0.0.0', port = port) # 以linebot()接收請求
 """
 print("\n######### main ########")
-Read_All_Data2()
+Read_All_Data()
 KNN_Recommend()
 port = int(os.environ.get('PORT', 5000))
 app.run(host = '0.0.0.0', port = port) # 以linebot()接收請求

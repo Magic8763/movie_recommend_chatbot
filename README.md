@@ -17,9 +17,9 @@
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Menu.jpg)
 
->點擊首頁的"近期上映"按鈕或輸入"@電影推薦機器人：近期上映"，返回上映日期最近的幾部電影。
+>點擊首頁的"最新電影"按鈕或輸入"@電影推薦機器人：最新電影"，返回上映日期最近的幾部電影。
 
-![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Playing2.jpg)
+![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_New.jpg)
 
 >點擊首頁的"關鍵字搜尋"按鈕或輸入"@電影推薦機器人：關鍵字搜尋"，接著輸入關鍵字，返回片名與其相符的所有電影。
 
@@ -27,7 +27,7 @@
 
 >點擊首頁的"智慧推薦"按鈕或輸入"@電影推薦機器人：智慧推薦"，返回推薦給用戶的幾部電影。
 
-![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Recommend2.jpg)
+![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Recommended.jpg)
 
 >點擊首頁的"評分紀錄"按鈕或輸入"@電影推薦機器人：評分紀錄"，返回用戶最近 10 筆電影評分。
 
@@ -39,7 +39,7 @@
 
 >點擊電影模板的"同類推薦"按鈕，返回與該電影類型相同的電影清單。
 
-![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Same_Category3.jpg)
+![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Similar.jpg)
 
 **ChatGPT**
 >非"@電影推薦機器人"前綴的文字訊息將由 ChatGPT 進行回應。
@@ -51,11 +51,11 @@
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Earthquake.jpg)
 
->輸入"@雷達回波圖"，返回最近的中央氣象署雷達合成回波圖。
+>輸入"@氣象雷達"，返回最近的中央氣象署雷達合成回波圖。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_RadarEcho.jpg)
 
->分享位置資訊，返回該地點的天氣資訊。
+>從 LINE app 分享位置訊息，返回該地點的天氣資訊。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Weather.jpg)
 

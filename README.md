@@ -13,45 +13,45 @@
 
 ## Demo
 **電影推薦**
->首頁介面
+>輸入「@電影推薦機器人」觸發機器人返回電影推薦首頁介面。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Menu.jpg)
 
->點擊首頁的"最新電影"按鈕或輸入"@電影推薦機器人：最新電影"，返回上映日期最近的幾部電影。
+>點擊首頁的「最新電影」按鈕或輸入「@電影推薦機器人：最新電影」，返回上映日期最近的數部電影。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_New.jpg)
 
->點擊首頁的"關鍵字搜尋"按鈕或輸入"@電影推薦機器人：關鍵字搜尋"，接著輸入關鍵字，返回片名與其相符的所有電影。
+>點擊首頁的「關鍵字搜尋」按鈕或輸入「@電影推薦機器人：關鍵字搜尋」，接著輸入關鍵字，返回片名與其相符的所有電影。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Keyword_Search.jpg)
 
->點擊首頁的"智慧推薦"按鈕或輸入"@電影推薦機器人：智慧推薦"，返回推薦給用戶的幾部電影。
+>點擊首頁的「智慧推薦」按鈕或輸入「@電影推薦機器人：智慧推薦」，返回推薦給用戶的數部電影。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Recommended.jpg)
 
->點擊首頁的"評分紀錄"按鈕或輸入"@電影推薦機器人：評分紀錄"，返回用戶最近 10 筆電影評分。
+>點擊首頁的「評分紀錄」按鈕或輸入「@電影推薦機器人：評分紀錄」，返回用戶最近 10 筆電影評分。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Read_Personal_Record.jpg)
 
->點擊電影模板的"給予評分"按鈕，接著輸入 1 ~ 10 之間的分數給予評分。
+>點擊電影模板的「給予評分」按鈕，接著輸入 1 ~ 10 之間的分數給予評分。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Score_message.jpg)
 
->點擊電影模板的"同類推薦"按鈕，返回與該電影類型相同的電影清單。
+>點擊電影模板的「同類推薦」按鈕，返回與該電影類型相同的電影清單。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Similar.jpg)
 
 **ChatGPT**
->非"@電影推薦機器人"前綴的文字訊息將由 ChatGPT 進行回應。
+>非「@電影推薦機器人」前綴的文字訊息將由 ChatGPT 進行回應。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Call_ChatGPT.jpg)
 
 **天氣狀況**
->輸入"@地震資訊"，返回最近的中央氣象署地震報告。
+>輸入「@地震資訊」，返回最近的中央氣象署地震報告。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Earthquake.jpg)
 
->輸入"@氣象雷達"，返回最近的中央氣象署雷達合成回波圖。
+>輸入「@氣象雷達」，返回最近的中央氣象署雷達合成回波圖。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_RadarEcho.jpg)
 

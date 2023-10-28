@@ -25,7 +25,7 @@
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Keyword_Search.jpg)
 
->點擊首頁的「智慧推薦」按鈕或輸入「@電影推薦機器人：智慧推薦」，返回推薦給用戶的數部電影。
+>點擊首頁的「智慧推薦」按鈕或輸入「@電影推薦機器人：智慧推薦」，返回與用戶近期查詢偏好相近的電影。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Recommended.jpg)
 

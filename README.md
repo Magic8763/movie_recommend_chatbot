@@ -29,20 +29,20 @@
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Recommended.jpg)
 
->點擊首頁的「評分紀錄」按鈕或輸入「@電影推薦機器人：評分紀錄」，返回用戶最近 10 筆電影評分。
+>點擊電影模板的「同類推薦」按鈕，返回與該電影類型相同的電影清單。
 
-![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Read_Personal_Record.jpg)
+![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Similar.jpg)
 
 >點擊電影模板的「給予評分」按鈕，接著輸入 1 ~ 10 之間的分數給予評分。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Score_message.jpg)
 
->點擊電影模板的「同類推薦」按鈕，返回與該電影類型相同的電影清單。
+>點擊首頁的「評分紀錄」按鈕或輸入「@電影推薦機器人：評分紀錄」，返回用戶最近 10 筆電影評分。
 
-![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Get_Similar.jpg)
+![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Read_Personal_Record.jpg)
 
 **ChatGPT**
->非「@電影推薦機器人」前綴的文字訊息將由 ChatGPT 進行回應。
+>非'@'前綴的文字訊息將由 ChatGPT 進行回應。
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/Call_ChatGPT.jpg)
 

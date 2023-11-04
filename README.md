@@ -9,6 +9,8 @@
 
 透過用戶與聊天機器人的互動，系統會逐漸更新電影推薦清單，得出符合用戶近期偏好的專屬內容。
 
+![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/structure.jpg)
+
 對使用者而言，所有操作僅在 LINE App 上進行，不必安裝其他應用，不用進行軟體更新，也不會佔用任何儲存空間，具有高度輕便性。 
 
 ## Demo

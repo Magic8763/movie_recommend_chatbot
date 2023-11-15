@@ -11,7 +11,7 @@
 
 ![image](https://github.com/Magic8763/linebot_on_Render/blob/main/img/structure.jpg)
 
-對使用者而言，所有操作僅在 LINE App 上進行，不必安裝其他應用，不用進行軟體更新，也不會佔用任何儲存空間，具有高度輕便性。 
+所有操作僅在 LINE App 上進行，用戶不必安裝其他應用，不用進行軟體更新，也不會佔用任何儲存空間，具有高度輕便性。 
 
 ## Demo
 **電影推薦**

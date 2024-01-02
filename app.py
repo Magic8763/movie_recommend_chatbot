@@ -2,7 +2,7 @@ from flask import Flask, request, abort # pip install flask
 from linebot import LineBotApi, WebhookHandler # pip install line-bot-sdk
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import (
-	MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage, ImageSendMessage, 
+	MessageEvent, TextSendMessage, TemplateSendMessage, ImageSendMessage, # TextMessage,
 	PostbackEvent, PostbackTemplateAction, URITemplateAction,
 	CarouselColumn, CarouselTemplate, ButtonsTemplate, ConfirmTemplate
 )
@@ -11,9 +11,9 @@ from dbpsql import userRatings
 from movie_class import Movie2
 import os
 import random
-import datetime
+# import datetime
 import pandas as pd
-import openai # pip install openai
+from openai import OpenAI # pip install openai
 import pickle
 import threading
 import time
@@ -22,7 +22,7 @@ app = Flask(__name__)
 # Environment variables on Render
 line_bot_api = LineBotApi(os.environ.get('CHANNEL_ACCESS_TOKEN')) # Channel Access Token
 handler = WebhookHandler(os.environ.get('CHANNEL_SECRET')) # Channel Secret
-openai.api_key = os.environ.get('OPENAI_API_KEY') # OPENAI_API_KEY
+openai_api_key = os.environ.get('OPENAI_API_KEY') # OPENAI_API_KEY
 
 genres_dict = {'Documentary': (0, '紀錄'), 'Comedy': (1, '喜劇'), 'Crime': (2, '犯罪'),
 			'War': (3, '戰爭'), 'Musical': (4, '歌舞'), 'Western': (5, '西部'),
@@ -589,7 +589,8 @@ class Request_Handle:
 	def Call_ChatGPT(self, input_text):
 		self.gpt_log.append({'role': 'user', 'content': input_text})
 		#print(self.gpt_log)
-		response = openai.ChatCompletion.create(
+		client = OpenAI(api_key = openai_api_key)
+		response = client.chat.completions.create(
 			#model = 'gpt-3.5-turbo',
 			model = 'gpt-4',
 			messages = self.gpt_log,
@@ -603,27 +604,27 @@ class Request_Handle:
 
 # 監聽所有來自'.../'的 Post Request
 @app.route("/", methods = ['POST'])
-def linebot(): # 每個訊息的首站
+def callback(): # 每個訊息的首站
 	print("\n######### linebot running ########")
 	signature = request.headers['X-Line-Signature'] # get X-Line-Signature header value
 	body = request.get_data(as_text = True) # get request body as text
 	app.logger.info("Request body: "+body)
 	try:
-		handler.handle(body, signature) # handle webhook body
+		handler.handle(body, signature) # handle webhook body, 將 body 交由 handler 分類處理
 	except InvalidSignatureError:
 		abort(400)
 	return 'OK'
 
 def Threading_Handle(event, isPostback=False):
 	print("######### Threading_Handle ########")
-	req = Request_Handle(event, isPostback)
+	Request_Handle(event, isPostback)
 	time.sleep(1)
 
 # 處理"模板點擊"
 @handler.add(PostbackEvent)
 def handle_postback(event):
 	print("######### handle_postback ########")
-	#req = Request_Handle(event, True)
+	#Request_Handle(event, True)
 	thread = threading.Thread(target = Threading_Handle, args = (event, True)) # 以thread生成
 	thread.start()
 
@@ -636,7 +637,7 @@ def handle_message(event):
 	# event.source.user_id = 使用者Line帳戶ID
 	# event.source.room_id = Line聊天室ID
 	# event.message.text = 使用者輸入訊息
-	#req = Request_Handle(event, False) # 以thread生成
+	#Request_Handle(event, False)
 	thread = threading.Thread(target = Threading_Handle, args = (event, False)) # 以thread生成
 	thread.start()
 

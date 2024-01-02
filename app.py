@@ -498,9 +498,9 @@ class Request_Handle:
 		records = userRatings.Record_reader(self.uid)
 		if not records:
 			return TextSendMessage(text = '您尚未完成電影評分')
-		elif get_last:
+		elif get_last: # 選擇近期最多3個評分紀錄填充self.searched
 			n = len(records)
-			for i in range(n-3+len(self.searched), n):
+			for i in range(max(0, n-3+len(self.searched)), n):
 				self.searched.append(records[i].movie)
 		else:
 			records.reverse()

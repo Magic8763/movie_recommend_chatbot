@@ -9,9 +9,9 @@
 
 隨著用戶與聊天機器人的互動，系統會動態更新電影推薦清單，得出符合用戶近期偏好的專屬內容。
 
-![image](https://github.com/Magic8763/movie_recommend_chatbot/blob/main/img/structure.jpg)
-
 用戶的所有操作僅需在 LINE App 上進行，不必安裝其他應用，不用更新軟體，也不會佔用額外的儲存空間，具有高度輕便性。 
+
+![image](https://github.com/Magic8763/movie_recommend_chatbot/blob/main/img/structure.jpg)
 
 ## Demo
 **電影推薦**

@@ -11,6 +11,8 @@
 
 用戶所有操作只需在 LINE App 上進行，不必安裝其他應用，無需定期更新軟體，也不會佔用額外儲存空間，具有高度輕便性。 
 
+另外整合了 ChatGPT 和天氣資訊 API，提供多樣化服務。
+
 ![image](https://github.com/Magic8763/movie_recommend_chatbot/blob/main/img/structure.jpg)
 
 ## Demo
@@ -48,7 +50,7 @@
 
 ![image](https://github.com/Magic8763/movie_recommend_chatbot/blob/main/img/Call_ChatGPT.jpg)
 
-**天氣狀況**
+**天氣資訊**
 >輸入「@地震資訊」，返回最近的中央氣象署地震報告。
 
 ![image](https://github.com/Magic8763/movie_recommend_chatbot/blob/main/img/Get_Earthquake.jpg)

@@ -11,7 +11,7 @@
 
 用戶所有操作只需在 LINE App 上進行，不必安裝其他應用，無需定期更新軟體，也不會佔用額外儲存空間，具有高度輕便性。 
 
-另外整合了 ChatGPT 和天氣資訊 API，提供多元化服務。
+另外整合了 ChatGPT 和天氣資訊 API 等泛用功能，提供多元化服務。
 
 ![image](https://github.com/Magic8763/movie_recommend_chatbot/blob/main/img/structure.jpg)
 

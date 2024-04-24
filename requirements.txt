@@ -1,4 +1,4 @@
-python-dateutil==3.10.14
+python_version=="3.10"
 line-bot-sdk
 flask
 pandas

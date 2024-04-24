@@ -58,7 +58,7 @@ def readVar(drt, fname, return_dict=False):
             with open(drt+'/'+fname+'.pkl', 'rb') as file:
                 obj = pickle.load(file)
         except:
-            print('File exist, but open error.')
+            print('File "', fname, '" exist, but open error.', sep='')
     return obj
 
 # 讀資料檔

@@ -2,7 +2,7 @@
 ![](https://img.shields.io/github/stars/magic8763/movie_recommend_chatbot)
 ![](https://img.shields.io/github/watchers/magic8763/movie_recommend_chatbot)
 ![](https://img.shields.io/github/forks/magic8763/movie_recommend_chatbot)
-![shields](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square)
+![shields](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](https://opensource.org/licenses/MIT)
 
 本專案為採用 Flask 框架開發的 LINE 聊天機器人，具有可供查詢與推薦電影的整合介面，並導入 ChatGPT 回應用戶的文字訊息。

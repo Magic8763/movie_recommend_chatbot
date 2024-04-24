@@ -1,3 +1,4 @@
+python-dateutil==3.10.14
 line-bot-sdk
 flask
 pandas
@@ -7,3 +8,4 @@ openai
 gunicorn
 flask_sqlalchemy
 psycopg2-binary
+surprise

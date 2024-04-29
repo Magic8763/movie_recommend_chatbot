@@ -4,7 +4,7 @@ pandas
 numpy
 requests
 openai
-waitress
+waitress-serve
 flask_sqlalchemy
 psycopg2-binary
 scikit-surprise==1.1.3

@@ -19,6 +19,7 @@ import threading
 import time
 from surprise import Reader, Dataset #, SVD
 import numpy as np
+from waitress import serve
 
 app = Flask(__name__)
 # Environment variables on Render
@@ -718,4 +719,5 @@ Read_All_Data('movies_0x1000_1M_compactify')
 Load_KNN()
 Load_SVD('svd_0x1000_1M_best')
 port = int(os.environ.get('PORT', 5000))
-app.run(host='0.0.0.0', port=port) # 以linebot()接收請求
+# app.run(host='0.0.0.0', port=port) # 以linebot()接收請求
+serve(app, host='0.0.0.0', port=port) # 使用 Waitress (WSGI伺服器)

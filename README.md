@@ -64,21 +64,22 @@
 ![image](https://github.com/Magic8763/movie_recommend_chatbot/blob/main/img/Get_Weather.jpg)
 
 ## Prerequisites
-- Python3, Flask, Flask-SQLAlchemy, Psycopg2, Requests, Pandas, LINE Messaging API SDK, OpenAI API
+- Python3, Flask, Flask-SQLAlchemy, Psycopg2, Requests, Pandas, NumPy, Surprise, LINE Messaging API SDK, OpenAI API
 - [LINE Official Account](https://manager.line.biz/) (建立機器人帳戶)
 - [LINE Developers](https://developers.line.biz/en/) (串接 Messaging API)
 - [OpenAI](https://platform.openai.com/) (串接 ChatGPT API)
 - [Render](https://render.com/) (Web Service, PostgreSQL)
 
 ## Description
-- `app.py`: 程式主體，針對 LINE 用戶的請求做出對應的回覆
-- `dbpsql.py`: PostgreSQL 資料庫的資料新增與讀取功能
-- `weather.py`: 取得天氣狀況與空氣品質資訊的相關功能
+- `app.py`: 程式主體，提供電影推薦和 ChatGPT 功能，並回覆 LINE 用戶的請求
+- `dbpsql.py`: PostgreSQL 資料庫的資料新增與查詢功能
+- `weather.py`: 天氣資訊 API 相關功能
 
-## Dataset
-- [KNN Movie Recommendation](https://github.com/Magic8763/knn_recommendation) 的 `movies_sorted.csv` 和 `knn_recommended_sorted.csv`
-  - `movies_sorted.csv`: 電影特徵資料集，根據上映年份遞增排序的 62423 部電影與其特徵
-  - `knn_recommended_sorted.csv`: 由 KNN 模型計算所得的電影推薦矩陣，包含與 7459 部相異電影各自高度相似的 50 部其他電影
+## Dataset & Model
+- [Movie Recommendation](https://github.com/Magic8763/knn_svd_recommendation)
+  - `movies@0x1000_1M_compactify.csv`: 電影特徵資料集，根據上映年份遞增排序的 62423 部電影與其特徵
+  - `knn_recommended_sorted.csv`: 以 KNN 模型生成的電影推薦矩陣，包含與 3794 部電影各自高度相似的 50 部其他電影, 用於冷啟動 (*Cold Start*) 電影推薦
+  - `svd++_best@0x1000_1M.pkl`: 預訓練的 Surprise SVD++ 模型, 能預測指定用戶對指定電影的評分, 用於熱啟動 (*Warm Start*) 電影推薦
 
 ## Reference
 - [STEAM 教育學習網](https://steam.oxxostudio.tw/category/python/example/line-bot-weather-3.html)

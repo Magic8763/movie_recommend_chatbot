@@ -82,7 +82,7 @@
   - `svd++_best@0x1000_1M.pkl`: 預訓練的 Surprise SVD++ 模型, 能預測指定用戶對任一電影的評分, 用於熱啟動 (*Warm Start*) 電影推薦
 
 ## Reference
-- [STEAM 教育學習網](https://steam.oxxostudio.tw/category/python/example/line-bot-weather-3.html)
+- [LINE BOT 教學](https://steam.oxxostudio.tw/category/python/example/line-bot-weather-3.html) - STEAM 教育學習網
 
 ## Authors
 * **[Magic8763](https://github.com/Magic8763)**

@@ -706,17 +706,17 @@ def handle_message(event):
 """
 if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下列程式碼
     print("\n######### main ########")
-    Read_All_Data('movies_0x1000_1M_compactify')
+    Read_All_Data('movies@0x1000_1M_compactify')
     Load_KNN()
-    Load_SVD('svd_0x1000_1M_best')
+    Load_SVD('svd++_best@0x1000_1M')
     port = int(os.environ.get('PORT', 5000))
     #app.debug = True
     app.run(host='0.0.0.0', port=port) # 以linebot()接收請求
     #serve(app, host='0.0.0.0', port=port) # 使用 Waitress (WSGI伺服器), 在Render上不支援
 """
 print("\n######### main ########")
-Read_All_Data('movies_0x1000_1M_compactify')
+Read_All_Data('movies@0x1000_1M_compactify')
 Load_KNN()
-Load_SVD('svd_0x1000_1M_best')
+Load_SVD('svd++_best@0x1000_1M')
 port = int(os.environ.get('PORT', 5000))
 app.run(host='0.0.0.0', port=port) # 以linebot()接收請求

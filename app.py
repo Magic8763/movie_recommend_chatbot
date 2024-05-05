@@ -708,7 +708,7 @@ if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下�
     print("\n######### main ########")
     Read_All_Data('movies@0x1000_1M_compactify')
     Load_KNN()
-    Load_SVD('svd++_best@0x1000_1M')
+    Load_SVD('SVD++_best@0x1000_1M')
     port = int(os.environ.get('PORT', 5000))
     #app.debug = True
     app.run(host='0.0.0.0', port=port) # 以linebot()接收請求
@@ -717,6 +717,6 @@ if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下�
 print("\n######### main ########")
 Read_All_Data('movies@0x1000_1M_compactify')
 Load_KNN()
-Load_SVD('svd++_best@0x1000_1M')
+Load_SVD('SVD++_best@0x1000_1M')
 port = int(os.environ.get('PORT', 5000))
 app.run(host='0.0.0.0', port=port) # 以linebot()接收請求

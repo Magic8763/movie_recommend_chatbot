@@ -530,9 +530,9 @@ class Request_Handle:
         if not get_more:
             dbid = userIDs.User_reader(self.uid)
             if dbid == None or dbid.id+svd_max_userId > svd_last_userId:
-                # self.ai_buff = self.KNN_Recommended(getSVD=False)
-                buf = self.KNN_Recommended(getSVD=True)
-                self.ai_buff = self.SVD_Recommended(svd_max_userId, buf)
+                self.ai_buff = self.KNN_Recommended(getSVD=False)
+                # buf = self.KNN_Recommended(getSVD=True)
+                # self.ai_buff = self.SVD_Recommended(svd_max_userId, buf)
             else:
                 buf = self.KNN_Recommended(getSVD=True)
                 self.ai_buff = self.SVD_Recommended(dbid.id+svd_max_userId, buf)

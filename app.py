@@ -19,6 +19,7 @@ import threading
 import time
 from surprise import Reader, Dataset #, SVD, SVDpp
 import numpy as np
+from collections import OrderedDict
 
 app = Flask(__name__)
 # Environment variables on Render
@@ -154,7 +155,7 @@ class Request_Handle:
         self.uid, self.status, self.GP_end = uid, 0, 0
         self.genres_buff = {} # genres_buff = {類別: 推薦清單}
         self.keyword_buff, self.ai_buff = [], []
-        self.scoring, self.searched = [], {} # searched: 追蹤最近查詢/評分/點擊的3部電影的movieId, searched[i]與該電影相關的推薦內容
+        self.scoring, self.searched = [], OrderedDict() # searched: 追蹤最近查詢/評分/點擊的3部電影的movieId, searched[i]與該電影相關的推薦內容
         self.reset_gpt_log() 
 
     def load_status(self, status_dict):
@@ -481,26 +482,27 @@ class Request_Handle:
         print("######### KNN_Recommended ########")
         if len(self.searched) < 3:
             self.Read_Personal_Record(get_last=True)
-        buf, knnKeys = set(), list(knnRec.keys())
-        searchedKeys = list(self.searched.keys())
-        keep_searched = {}
+        knnKeys = list(knnRec.keys())
         random.shuffle(knnKeys)
+        searchedKeys = list(self.searched.keys())
         for movieidx in searchedKeys:
-            if movieidx in knnKeys:
-                keep_searched[movieidx] = self.searched[movieidx]
-            del self.searched[movieidx]
-        self.searched = {movieidx: 0 for movieidx in knnKeys[:3-len(keep_searched)]}
-        for movieidx in keep_searched.keys():
-            self.searched[movieidx] = keep_searched[movieidx]
+            if movieidx not in knnKeys:
+                del self.searched[movieidx]
+        while len(self.searched) < 3: # 填滿至3部近期點閱的電影
+            random_movie_idx = knnKeys.pop()
+            if random_movie_idx not in self.searched:
+                self.searched[random_movie_idx] = 0
+                self.searched.move_to_end(random_movie_idx, last=False) # 將填充項移到字典最左側
+        buf = set()
         for movieidx in self.searched.keys():
-            n = len(knnRec[movieidx])
+            n = len(knnRec[movieidx]) # 預設為50
             start = self.searched[movieidx]%n
-            end = min(start+carousel_size, n)
+            end = min(start+carousel_size, n) # 每一部電影抓一頁的推薦量, 預設為4
             for i in range(start, end):
-                if knnRec[movieidx][i] not in self.searched.keys():
+                if knnRec[movieidx][i] not in self.searched.keys(): # 過濾重複的電影
                     buf.add(knnRec[movieidx][i])
             self.searched[movieidx] = end
-        buf = list(buf)
+        buf = list(buf) # 推建量預設最多為 一頁4*追蹤的三部3 = 12 部
         if getSVD:
             return buf
         else:
@@ -583,9 +585,9 @@ class Request_Handle:
         movieidx = nameTable[movieId][0]
         if movieidx not in self.searched.keys():
             self.searched[movieidx] = 0
+        self.searched.move_to_end(movieidx, last=True) # 最近的電影移到有序字典末端
         if len(self.searched.keys()) > 3:
-            first_key = list(self.searched.keys())[0]
-            del self.searched[first_key]
+            self.searched.popitem(last=False) # 移除有序字典內最舊的電影
         print(' Update ', self.uid, ', searched: ', self.searched.keys(), sep='')
 
     # 紀錄評分
@@ -657,7 +659,7 @@ class Request_Handle:
             #model = 'gpt-3.5-turbo',
             model = 'gpt-4',
             messages = self.gpt_log,
-            max_tokens = 512, # max_tokens 最大為2048
+            max_tokens = 512, # 回應的字數上限, 最大為2048
             temperature = 1
         )
         msg = response.choices[0].message.content
@@ -667,16 +669,16 @@ class Request_Handle:
 
 # 監聽所有來自'.../'的 Post Request
 @app.route("/", methods=['POST'])
-def callback(): # 每個訊息的首站
+def callback(): # 每個 Request 的首站
     print("\n######### linebot running ########")
-    signature = request.headers['X-Line-Signature'] # get X-Line-Signature header value
-    body = request.get_data(as_text=True) # get request body as text
+    signature = request.headers['X-Line-Signature'] # 提取標頭內的數位簽章"X-Line-Signature"
+    body = request.get_data(as_text=True) # 將請求的 body 轉為字串
     app.logger.info("Request body: "+body)
     try:
-        handler.handle(body, signature) # handle webhook body, 將 body 交由 handler 分類處理
+        handler.handle(body, signature) # 將 body 交給 handler 路由處理，同時驗證 Linebot 頻道密鑰與 signature 是否一致
     except InvalidSignatureError:
-        abort(400)
-    return 'OK'
+        abort(400) # 提前退回請求，返回HTTP狀態碼400給對方
+    return 'OK' # 完成請求的處理，返回HTTP狀態碼200給對方
 
 def Threading_Handle(event, isPostback=False):
     print("######### Threading_Handle ########")
@@ -712,7 +714,6 @@ if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下�
     port = int(os.environ.get('PORT', 5000))
     #app.debug = True
     app.run(host='0.0.0.0', port=port) # 以linebot()接收請求
-    #serve(app, host='0.0.0.0', port=port) # 使用 Waitress (WSGI伺服器), 在Render上不支援
 """
 print("\n######### main ########")
 Read_All_Data('movies@0x1000_1M_compactify')

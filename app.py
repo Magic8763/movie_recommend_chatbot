@@ -1,4 +1,5 @@
 from flask import Flask, request, abort # pip install flask
+from flask_restful import Api, Resource # pip install Flask-RESTful
 from linebot import LineBotApi, WebhookHandler # pip install line-bot-sdk
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import (
@@ -11,7 +12,6 @@ from dbpsql import userRatings, userIDs
 from movie_class import Movie2
 import os
 import random
-# import datetime
 import pandas as pd
 from openai import OpenAI # pip install openai
 import pickle
@@ -22,6 +22,7 @@ import numpy as np
 from collections import OrderedDict
 
 app = Flask(__name__)
+api = Api(app)
 # Environment variables on Render
 line_bot_api = LineBotApi(os.environ.get('CHANNEL_ACCESS_TOKEN')) # Channel Access Token
 handler = WebhookHandler(os.environ.get('CHANNEL_SECRET')) # Channel Secret
@@ -310,10 +311,7 @@ class Request_Handle:
                 ]
             )
         elif home == 2:
-            if keyword != None:
-                head = '\"'+keyword+'\"的搜尋結果'
-            else:
-                head = '其他結果'
+            head = '\"'+keyword+'\"的搜尋結果' if keyword != None else '其他結果'
             msg = CarouselColumn(
                 thumbnail_image_url=honmpage_picture,
                 title=head,
@@ -667,19 +665,6 @@ class Request_Handle:
         self.gpt_log.append({'role': 'assistant', 'content': msg})
         return TextSendMessage(text=msg)
 
-# 監聽所有來自'.../'的 Post Request
-@app.route("/", methods=['POST'])
-def callback(): # 每個 Request 的首站
-    print("\n######### linebot running ########")
-    signature = request.headers['X-Line-Signature'] # 提取標頭內的數位簽章"X-Line-Signature"
-    body = request.get_data(as_text=True) # 將請求的 body 轉為字串
-    app.logger.info("Request body: "+body)
-    try:
-        handler.handle(body, signature) # 將 body 交給 handler 路由處理，同時驗證 Linebot 頻道密鑰與 signature 是否一致
-    except InvalidSignatureError:
-        abort(400) # 提前退回請求，返回HTTP狀態碼400給對方
-    return 'OK' # 完成請求的處理，返回HTTP狀態碼200給對方
-
 def Threading_Handle(event, isPostback=False):
     print("######### Threading_Handle ########")
     Request_Handle(event, isPostback)
@@ -705,6 +690,25 @@ def handle_message(event):
     #Request_Handle(event, False)
     thread = threading.Thread(target=Threading_Handle, args=(event, False)) # 以thread生成
     thread.start()
+
+class callback(Resource):
+    def get(self):
+        return 'Connect Successful.', 200
+        
+    def post(self): # 監聽所有來自'.../'的 Post Request
+        print("\n######### linebot running ########")
+        signature = request.headers['X-Line-Signature'] # 提取標頭內的數位簽章"X-Line-Signature"
+        body = request.get_data(as_text=True) # 將請求的 body 轉為字串
+        app.logger.info("Request body: "+body)
+        try:
+            handler.handle(body, signature) # 將 body 交給 handler 路由處理，同時驗證 Linebot 頻道密鑰與 signature 是否一致
+        except InvalidSignatureError:
+            abort(400) # 提前退回請求，返回HTTP狀態碼400給對方
+        return 'OK' # 完成請求的處理，返回HTTP狀態碼200給對方
+
+# 建立API路由products，並將該路由導向Products物件
+api.add_resource(callback, '/') # http://localhost:5000/
+
 """
 if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下列程式碼
     print("\n######### main ########")

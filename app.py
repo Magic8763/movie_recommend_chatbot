@@ -651,11 +651,10 @@ class Request_Handle:
     # 以ChatGPT回覆訊息
     def Call_ChatGPT(self, input_text):
         self.gpt_log.append({'role': 'user', 'content': input_text})
-        #print(self.gpt_log)
         client = OpenAI(api_key=openai_api_key)
         response = client.chat.completions.create(
-            #model = 'gpt-3.5-turbo',
-            model = 'gpt-4',
+            model = 'gpt-3.5-turbo',
+            #model = 'gpt-4',
             messages = self.gpt_log,
             max_tokens = 512, # 回應的字數上限, 最大為2048
             temperature = 1

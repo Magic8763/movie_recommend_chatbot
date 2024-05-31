@@ -13,7 +13,7 @@ class userRatings(db.Model):
     __tablename__ = 'userRatings' # 目標資料表
     __table_args__ = {'keep_existing': True}
     id = db.Column(db.Integer, primary_key = True) # 整數型主鍵
-    uid =db.Column(db.Integer) # 整數型用戶ID
+    uid = db.Column(db.Integer) # 整數型用戶ID
     movie = db.Column(db.String(6)) # 字串型電影ID (長度上限=6)
     rating = db.Column(db.Integer) # 整數型評分
     timestamp = db.Column(db.TIMESTAMP, default=datetime.now) # 時間型時間戳記

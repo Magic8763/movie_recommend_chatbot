@@ -2,7 +2,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy # pip install flask_sqlalchemy
 from datetime import datetime
-# import os
+import os
 
 app = Flask(__name__)
 # [DB_TYPE]+[DB_CONNECTOR]://[USERNAME]:[PASSWORD]@[HOST]:[PORT]/[DB_NAME]

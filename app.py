@@ -653,8 +653,8 @@ class Request_Handle:
         self.gpt_log.append({'role': 'user', 'content': input_text})
         client = OpenAI(api_key=openai_api_key)
         response = client.chat.completions.create(
-            model = 'gpt-3.5-turbo',
-            #model = 'gpt-4',
+            #model = 'gpt-3.5-turbo',
+            model = 'gpt-4o',
             messages = self.gpt_log,
             max_tokens = 512, # 回應的字數上限, 最大為2048
             temperature = 1

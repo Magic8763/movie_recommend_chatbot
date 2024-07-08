@@ -181,9 +181,9 @@ class Request_Handle:
             print('  >>> 電影推薦機器人 <<<')
             if self.status == 2: # 關鍵字搜尋
                 message = self.Keyword_Search(1, event.message.text)
+                self.status = 0
             elif self.status == 5: # 給予評分
                 message = self.Score_message(event.message.text)
-            self.status = 0
         elif event.message.type == 'location': # 發送本地位置 "https://line.me/R/nv/location/" 訊息
             print('  >>> 氣象預報機器人 <<<')
             address = event.message.address
@@ -250,7 +250,7 @@ class Request_Handle:
         elif event.postback.data[0:10] == 'action=5-1':
             self.status = 5
             self.scoring = event.postback.data.split('\n')[1:]
-            message = TextSendMessage(text='請輸入分數(1~10)')
+            message = TextSendMessage(text='請輸入整數分數(1~10)')
         elif event.postback.data == 'action=6-1':
             message = self.Get_Recommended(get_more=False)
         elif event.postback.data == 'action=6-2':
@@ -599,9 +599,10 @@ class Request_Handle:
                 self.Update_Searched(movieId)
             self.Save_Personal_Record(movieId, num)
             print('\n****'+ self.uid+'****'+movieId+'****'+movieName+'****'+str(num)+'****')
-            msg = TextSendMessage(text='"'+movieName+'" 已評分')        
+            msg = TextSendMessage(text='"'+movieName+'" 已評分')
+            self.status = 0
         except ValueError:
-            msg = TextSendMessage(text='評分失敗')
+            msg = TextSendMessage(text='評分失敗, 請重新輸入分數')
         return msg
 
     # 關鍵字搜尋
@@ -716,11 +717,11 @@ if __name__ == "__main__": # 當app.py是被執行而非被引用時, 執行下�
     Load_SVD('SVD++_best@0x1000_1M')
     port = int(os.environ.get('PORT', 5000))
     #app.debug = True
-    app.run(host='0.0.0.0', port=port) # 以linebot()接收請求
+    app.run(host='0.0.0.0', port=port, threaded=True) # 以linebot()接收請求
 """
 print("\n######### main ########")
 Read_All_Data('movies@0x1000_1M_compactify')
 Load_KNN()
 Load_SVD('SVD++_best@0x1000_1M')
 port = int(os.environ.get('PORT', 5000))
-app.run(host='0.0.0.0', port=port) # 以linebot()接收請求
+app.run(host='0.0.0.0', port=port, threaded=True) # 以linebot()接收請求
